@@ -1,0 +1,45 @@
+game/
+│
+├── script.rpy                 # doar start-ul jocului și flow-ul principal
+├── gui.rpy
+├── screens.rpy
+├── options.rpy
+│
+├── systems/
+│   ├── game_state.rpy          # starea jocului
+│   ├── map_system.rpy          # deplasare pe hartă
+│   ├── fast_travel.rpy         # fast travel / unlock zones
+│   ├── quest_system.rpy        # quest-uri, obiective, progres
+│   ├── combat_system.rpy       # combat de bază
+│   ├── inventory_system.rpy    # inventar, resurse, iteme
+│   └── npc_system.rpy          # interacțiuni cu NPC-uri
+│
+├── quests/
+│   ├── main_quest.rpy          # quest principal
+│   ├── side_quests.rpy         # side quest-uri locale
+│   └── quest_data.rpy          # date/config pentru quest-uri
+│
+├── ai/
+│   ├── environment_director.rpy
+│   ├── combat_adaptation.rpy
+│   └── reward_evaluator.rpy
+│
+├── locations/
+│   ├── location_data.rpy       # zone, regiuni, coordonate, unlock state
+│   └── travel_labels.rpy       # label-uri pentru intrarea în zone
+│
+├── characters/
+│   ├── character_defs.rpy      # define e, npc-uri, nume
+│   ├── npc_data.rpy            # date NPC
+│   └── dialogue_common.rpy
+│
+├── data/
+│   ├── items.rpy
+│   ├── enemies.rpy
+│   ├── rewards.rpy
+│   └── flags.rpy
+│
+├── images/
+├── audio/
+├── video/
+└── fonts/
