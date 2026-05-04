@@ -1,10 +1,9 @@
-label init_game_state:
+default player_name = "Mara"
 
-    $ player_location = "start_room"
-    $ unlocked_locations = ["start_room"]
-    $ active_quests = []
-    $ completed_quests = []
-    $ inventory = {}
-    $ player_level = 1
+default loyalty_vlad = 0
+default loyalty_boyars = 0
+default loyalty_ottomans = 0
 
-    return
+default quest_stage = 0
+default has_secret_letter = False
+default player_wounded = False

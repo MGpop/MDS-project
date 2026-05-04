@@ -1,0 +1,6 @@
+define p = Character("[player_name]")
+define vlad = Character("Vlad Țepeș")
+define hangiu = Character("Hangiul")
+define boier = Character("Boierul Radu")
+define soldat = Character("Soldat")
+define n = Character(None)

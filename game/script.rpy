@@ -1,33 +1,39 @@
-﻿# The script of the game goes in this file.
+﻿label start:
 
-# Declare characters used by this game. The color argument colorizes the
-# name of the character.
+    $ player_name = renpy.input("Cum te numești?")
+    $ player_name = player_name.strip()
 
-define e = Character("Eileen")
+    if player_name == "":
+        $ player_name = "Mara"
+
+    jump main_quest_intro
 
 
-# The game starts here.
 
-label start:
 
-    # Show a background. This uses a placeholder by default, but you can
-    # add a file (named either "bg room.png" or "bg room.jpg") to the
-    # images directory to show it.
+label demo_ending:
 
     scene bg room
 
-    # This shows a character sprite. A placeholder is used, but you can
-    # replace it by adding a file named "eileen happy.png" to the images
-    # directory.
+    if loyalty_vlad > loyalty_boyars and loyalty_vlad > loyalty_ottomans:
+        n "Pentru moment, alegerea ta îl întărește pe Vlad."
+        n "Dar Țara Românească va plăti prețul fricii."
 
-    show eileen happy
+    elif loyalty_boyars > loyalty_vlad and loyalty_boyars > loyalty_ottomans:
+        n "Ai ales boierii."
+        n "Poate ai salvat câteva vieți. Sau poate ai deschis poarta trădării."
 
-    # These display lines of dialogue.
+    elif loyalty_ottomans > loyalty_vlad and loyalty_ottomans > loyalty_boyars:
+        n "Ai ales umbra Imperiului Otoman."
+        n "Pacea promisă miroase deja a lanțuri."
 
-    e "You've created a new Ren'Py game."
+    else:
+        n "Nu ai ales încă o tabără."
+        n "Iar asta te face periculos pentru toate."
 
-    e "Once you add a story, pictures, and music, you can release it to the world!"
+    if player_wounded:
+        n "Ai supraviețuit, dar rana îți amintește că fiecare alegere are un cost."
 
-    # This ends the game.
+    n "Sfârșitul demo-ului."
 
     return
