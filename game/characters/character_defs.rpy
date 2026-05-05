@@ -5,7 +5,7 @@ init python:
     COLOR_OTOMAN  = "#1a6b3c"
     COLOR_ORDIN   = "#4a4a8a"
 
-define narrator = Character(None, kind=nvl)
+define narrator = Character(None)
 
 define player = Character("[player_name]", color="#e8d5a3")
 

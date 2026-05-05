@@ -13,7 +13,7 @@ label tranzitie_drum(origin, dest):
     $ route_key = (origin, dest)
     $ connector = TRAVEL_ROUTES.get(route_key)
     if connector == "drum_targoviste_curtea":
-        "Mergi pe ulița principală spre Curtea Domnească. Soldați Vlad patrulează la fiecare colț."
+        "Mergi pe ulița principală spre Curtea Domnească. Soldații lui Vlad patrulează la fiecare colț."
     elif connector == "drum_targoviste_han":
         "Cobori spre marginea orașului. Hanul e vizibil de la distanță — singurul loc cu lumini la ora asta."
     elif connector == "camp_han_padure":
