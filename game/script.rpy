@@ -1,6 +1,7 @@
 label start:
     call init_game_state
-
+    # jump test_branch2
+    
     scene black with fade
 
     "Anul 1456. Țara Românească."
@@ -14,4 +15,5 @@ label start:
 
     "[player_name]. Acesta este numele tău. Poate ultimul lucru sigur din această misiune."
 
-    jump chapter_1_start
+    jump grid_map
+    #jump chapter_1_start

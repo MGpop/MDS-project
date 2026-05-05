@@ -80,12 +80,76 @@ init python:
     def location_name(loc_id):
         return LOCATIONS.get(loc_id, {}).get("name", loc_id)
 
-    def location_connections(loc_id):
-        return LOCATIONS.get(loc_id, {}).get("connections", [])
-
     def is_location_unlocked(loc_id):
-        return loc_id in unlocked_locations
+        return loc_id in store.unlocked_locations
 
     def unlock_location(loc_id):
-        if loc_id not in unlocked_locations:
-            unlocked_locations.append(loc_id)
+        if loc_id not in store.unlocked_locations:
+            store.unlocked_locations.append(loc_id)
+
+init python:
+    # Grila lumii: 12 rânduri × 12 coloane
+    # T=Târgoviște  C=Curtea Domnească  H=Han  P=Pădure  O=Tabăra otomană
+    # _=drum traversabil  #=zid (inaccesibil)
+    GRID_ROWS = 12
+    GRID_COLS = 12
+
+    WORLD_GRID = [
+        "##CCCC######",   # rând 0
+        "#TTCC#######",   # rând 1
+        "TTTT__######",   # rând 2  ← start jucător (2,1)
+        "TTT__#######",   # rând 3
+        "_T__########",   # rând 4
+        "_HH__#######",   # rând 5
+        "_HH_PPP#####",   # rând 6
+        "##__PPPP####",   # rând 7
+        "###__PPPPOO#",   # rând 8
+        "####__PPOOO#",   # rând 9
+        "#####__OOO##",   # rând 10
+        "######_#OO##",   # rând 11
+    ]
+
+    ZONE_CHARS = {
+        'T': 'targoviste',
+        'C': 'curtea_domneasca',
+        'H': 'han',
+        'P': 'padure',
+        'O': 'tabara_otomana',
+    }
+
+    # Poziția de spawn pe grilă pentru fiecare locație
+    ZONE_START_POS = {
+        'targoviste':       (2, 1),
+        'curtea_domneasca': (0, 3),
+        'han':              (5, 2),
+        'padure':           (7, 5),
+        'tabara_otomana':   (9, 9),
+    }
+
+    # Culori minimapă
+    MINIMAP_COLORS = {
+        'T': "#8B7355",
+        'C': "#696969",
+        'H': "#CD853F",
+        'P': "#228B22",
+        'O': "#B8860B",
+        '_': "#A0A0A0",
+        '#': "#1A1A1A",
+    }
+
+    def get_cell_char(row, col):
+        if 0 <= row < GRID_ROWS and 0 <= col < GRID_COLS:
+            return WORLD_GRID[row][col]
+        return '#'
+
+    def get_zone_at(row, col):
+        return ZONE_CHARS.get(get_cell_char(row, col))
+
+    def is_grid_passable(row, col):
+        c = get_cell_char(row, col)
+        if c == '#':
+            return False
+        zone = ZONE_CHARS.get(c)
+        if zone:
+            return is_location_unlocked(zone)
+        return True  # celulele '_' (drum) sunt mereu accesibile
