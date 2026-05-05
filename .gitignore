@@ -32,5 +32,6 @@ doar_idei.txt
 .DS_Store
 Thumbs.db
 
-# Optional: ignore VS Code personal settings
-.vscode/
+# VS Code — ignoră setări personale, dar păstrează settings.json comun
+.vscode/*
+!.vscode/settings.json
