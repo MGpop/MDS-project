@@ -2,6 +2,8 @@
 # Apelate de grid_map când jucătorul intră într-o nouă zonă.
 # Returnează după narațiune — grid_map continuă.
 
+default han_otoman_defeated = False
+
 label enter_targoviste:
     $ player_location = "targoviste"
     scene expression location_background_displayable("targoviste") with dissolve
@@ -18,7 +20,7 @@ label enter_curtea_domneasca:
 label enter_han:
     scene bg han with dissolve
 
-    $ han_has_ottoman = renpy.random.randint(1, 100) <= 50
+    $ han_has_ottoman = (not han_otoman_defeated) and renpy.random.randint(1, 100) <= 50
 
     if han_has_ottoman:
 
@@ -30,6 +32,8 @@ label enter_han:
 
             hide otoman_spotted with dissolve
             call start_combat("soldat_otoman", "grid_map")
+            if combat_last_result == "victory":
+                $ han_otoman_defeated = True
             return
 
         else:
@@ -45,6 +49,8 @@ label enter_han:
                 "Îl confrunt":
                     hide otoman_default with dissolve
                     call start_combat("soldat_otoman", "grid_map")
+                    if combat_last_result == "victory":
+                        $ han_otoman_defeated = True
                     return
 
     "Hanul e liniștit."
