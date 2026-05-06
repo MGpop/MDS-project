@@ -9,6 +9,12 @@ default inventory = {}
 default player_level = 1
 default current_chapter = 1
 
+default player_max_health = 100
+default player_health = 100
+default in_combat = False
+default combat_parry_active = False
+default combat_last_result = None
+
 default loyalty_vlad = 0
 default loyalty_boyars = 0
 default loyalty_ottomans = 0
@@ -32,6 +38,11 @@ label init_game_state:
     $ inventory = {}
     $ player_level = 1
     $ current_chapter = 1
+    $ player_max_health = 100
+    $ player_health = player_max_health
+    $ in_combat = False
+    $ combat_parry_active = False
+    $ combat_last_result = None
     $ loyalty_vlad = 0
     $ loyalty_boyars = 0
     $ loyalty_ottomans = 0

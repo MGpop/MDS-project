@@ -14,10 +14,40 @@ label enter_curtea_domneasca:
     "Porțile Curții Domnești se deschid în fața ta. Soldații te urmăresc cu privirea. Fiecare pas e numărat."
     return
 
+# luptă demo
 label enter_han:
-    $ player_location = "han"
-    scene expression location_background_displayable("han") with dissolve
-    "Hanul Corbului Negru. Fum gros, voci joase. Cineva dintr-un colț întunecat nu vrea să fie văzut."
+    scene bg han with dissolve
+
+    $ han_has_ottoman = renpy.random.randint(1, 100) <= 50
+
+    if han_has_ottoman:
+
+        $ otoman_starts_fight = renpy.random.randint(1, 100) <= 50
+
+        if otoman_starts_fight:
+            show otoman_spotted at enemy_alert_pos with dissolve
+            "Soldatul otoman te vede și pune mâna pe armă."
+
+            hide otoman_spotted with dissolve
+            call start_combat("soldat_otoman", "grid_map")
+            return
+
+        else:
+            show otoman_default at enemy_idle_pos with dissolve
+            "Un soldat otoman stă în han, dar nu pare interesat de tine."
+
+            menu:
+                "Ce faci?"
+                "Îl ignor":
+                    "Îți vezi de treabă."
+                    return
+
+                "Îl confrunt":
+                    hide otoman_default with dissolve
+                    call start_combat("soldat_otoman", "grid_map")
+                    return
+
+    "Hanul e liniștit."
     return
 
 label enter_padure:

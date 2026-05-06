@@ -7,6 +7,16 @@ init python:
             "difficulty": 1,
             "locations":  ["tabara_otomana", "drum_padure_tabara"],
             "reward":     "monede",
+
+            "max_health": 100,
+            "damage": 10,
+
+            "default_sprite": "otoman_default",
+            "spotted_sprite": "otoman_spotted",
+            "fight_sprite": "otoman_fight",
+            "parry_sprite": "otoman_parry",
+            "light_sprite": "otoman_light",
+            "heavy_sprite": "otoman_heavy",
         },
         "boier_garda": {
             "name":       "Gardă boierească",
