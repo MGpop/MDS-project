@@ -16,69 +16,196 @@ La nivel de concept, jocul include mai multe straturi:
 - **sisteme de progres** pentru inventar, quest-uri și reputație;
 - **ramificații** bazate pe loialitate, informații descoperite și decizii ale jucătorului.
 
-### Universul jocului
+---
 
-Acțiunea pornește în contextul întoarcerii lui Vlad Țepeș la tron. Ordinul Dragonului își trimite agentul în teren cu o misiune aparent clară, însă intriga este construită în jurul ideii că informațiile primite inițial sunt incomplete sau manipulate. Direcția dorită pentru joc este una de **mister politic**, **tensiune între facțiuni** și **dezvăluiri treptate**.
+## Universul jocului
 
-### Stack și organizare
+Acțiunea pornește în contextul întoarcerii lui Vlad Țepeș la tron. Ordinul Dragonului își trimite agentul în teren cu o misiune aparent clară, însă intriga este construită în jurul ideii că informațiile primite inițial sunt incomplete sau manipulate.
+
+Direcția dorită pentru joc este una de:
+- mister politic;
+- tensiune între facțiuni;
+- conspirații;
+- dezvăluiri treptate;
+- explorare semi-liberă a lumii.
+
+---
+
+## Stack și organizare
 
 Proiectul folosește:
 - `Ren'Py 8.5.2`
-- scripturi `.rpy` pentru logică, UI și narațiune
-- asset-uri de UI în `game/gui/`
-- background-uri de gameplay și intro în `game/images/backgrounds/`
+- scripturi `.rpy` pentru logică, UI și narațiune;
+- asset-uri UI în `game/gui/`;
+- background-uri și sprite-uri în `game/images/`.
 
-Structura logică a proiectului este împărțită astfel:
-- `game/script.rpy` — flow-ul de start și intro-ul jocului;
+Structura logică principală:
+
+- `game/script.rpy` — flow-ul de start și intro-ul;
 - `game/systems/` — sisteme de gameplay;
-- `game/locations/` — locații, hartă și intrări în zone;
-- `game/characters/` — definiții de personaje și date NPC;
+- `game/locations/` — hartă, locații și intrări în zone;
+- `game/characters/` — personaje și definiții vizuale;
 - `game/data/` — iteme, rewards, flags, inamici;
-- `game/quests/` — quest-uri și progres narativ;
-- `game/ai/` — module planificate pentru adaptare și evaluare;
-- `game/images/backgrounds/` — background-uri folosite în intro și pe hartă.
+- `game/quests/` — progres narativ și quest-uri;
+- `game/ai/` — module planificate pentru sisteme adaptive.
 
 ---
 
----
+# Status curent
+
+## Rezumat
+
+În forma actuală, proiectul este un **prototype / pre-alpha** cu:
+- explorare funcțională;
+- bază de UI;
+- sistem minim de combat;
+- fundaluri și prezentare vizuală coerentă;
+- primele interacțiuni dinamice cu inamici.
+
+Fundația tehnică a jocului există deja, iar accentul actual al dezvoltării este pe:
+- integrarea sistemelor;
+- conținut narativ;
+- extinderea combatului;
+- iterarea pe flow-ul general al gameplay-ului.
 
 ---
 
-## Status curent
+# Ce funcționează acum
 
-### Rezumat
+## Intro și flow de bază
 
-În stadiul actual, proiectul este cel mai bine descris ca un **prototype / pre-alpha** cu un **vertical slice de explorare și atmosferă**. Fundația tehnică este deja construită, iar partea vizuală de bază pentru intro și deplasarea pe hartă este funcțională. În schimb, multe dintre sistemele mari planificate există încă doar ca structură sau placeholder.
-
-### Ce funcționează acum
-
-- Intro-ul jocului există și folosește asset-uri dedicate de opening.
+- Intro-ul jocului este funcțional și folosește asset-uri dedicate.
 - Jucătorul își poate introduce numele.
-- Jocul pornește într-un flow clar către hartă.
+- Flow-ul dintre intro și gameplay este stabil.
+- Jocul pornește direct către sistemul de explorare.
+
+---
+
+## Explorare și hartă
+
 - Există un sistem de explorare pe o **grilă 12×12**.
-- Locațiile principale și conectorii dintre ele sunt definiți în date.
-- Background-urile au fost legate la fișiere reale din `game/images/backgrounds/`.
-- Harta afișează acum fundaluri atât pentru locații principale, cât și pentru drumurile/conectorii definiți explicit în grid.
-- Există bazele pentru:
-  - NPC-uri;
-  - iteme;
-  - inamici;
-  - rewards;
-  - flags și identificatori pentru quest-uri/facțiuni.
+- Locațiile principale sunt definite în date.
+- Există conectori și drumuri între regiuni.
+- Background-urile sunt legate la locații reale.
+- Harta afișează fundaluri atât pentru locații, cât și pentru drumurile importante.
 
-### Ce este implementat doar parțial
+Locații implementate parțial:
+- Han;
+- Curtea Domnească;
+- Pădure;
+- Tabăra otomană.
 
-- **Fast travel** există ca logică, dar depinde de deblocarea locațiilor pe măsură ce jocul avansează.
-- **Curtea Domnească**, **Pădurea** și **Tabăra otomană** sunt definite și au background-uri, dar progresia completă spre ele nu este încă susținută de quest-uri și evenimente reale.
-- Interacțiunile din zone sunt pregătite structural, dar nu sunt încă populate consistent cu conținut.
+---
 
-### Ce nu este încă implementat
+## Combat (versiune minimă)
 
-Următoarele module există în repo, dar sunt încă goale sau aproape nefolosite:
+Proiectul include acum o primă versiune funcțională a sistemului de combat.
+
+Implementarea actuală este intenționat minimalistă și servește drept bază pentru dezvoltări ulterioare.
+
+### Sistemul actual
+
+Combatul funcționează pe baza unor cooldown-uri independente:
+- jucătorul și inamicul acționează separat;
+- fiecare acțiune are delay propriu;
+- damage-ul este aplicat la finalul acțiunii;
+- pararea anulează damage-ul pe durata efectului.
+
+### Acțiunile jucătorului
+
+Momentan există trei acțiuni:
+- `Parare`
+- `Light blow`
+- `Heavy blow`
+
+### Pattern-ul inamicilor
+
+Inamicii folosesc momentan un pattern simplu:
+- `light → parry → heavy`
+
+Acesta este temporar și va fi înlocuit ulterior cu:
+- AI contextual;
+- variații de stil de luptă;
+- arme diferite;
+- statistici;
+- comportamente adaptive.
+
+---
+
+## Sănătate și moarte
+
+Sistemul include:
+- HP pentru jucător;
+- HP pentru inamici;
+- blocarea salvării în timpul luptei;
+- game over simplu.
+
+Înainte de luptă:
+- jocul recomandă salvarea.
+
+La moarte:
+- apare un mesaj de deces;
+- jucătorul este informat că trebuie să revină la o salvare anterioară;
+- următorul ecran trimite către meniul principal.
+
+---
+
+## Întâlniri dinamice cu inamici
+
+Există acum primele evenimente dinamice legate de inamici.
+
+Exemplu:
+- în Han există o șansă de 50% ca un soldat otoman să fie prezent;
+- dacă este prezent, există o șansă separată de 50% să înceapă el lupta;
+- dacă nu este agresiv, jucătorul îl poate ignora sau confrunta.
+
+Sistemul este construit pentru extindere către:
+- patrule;
+- ambuscade;
+- reputație între facțiuni;
+- reacții bazate pe progresul narativ.
+
+---
+
+## Prezentare vizuală
+
+Combatul afișează:
+- background-ul locației;
+- sprite-ul inamicului;
+- imaginile asociate acțiunilor playerului;
+- UI pentru HP și status.
+
+### Sprite-uri pentru inamici
+
+Structura actuală folosește stări separate:
+- `default`
+- `spotted`
+- `fight`
+- `parry`
+- `light`
+- `heavy`
+
+Această organizare permite extinderea ulterioară fără refactorizare majoră.
+
+---
+
+# Ce este implementat doar parțial
+
+- **Fast travel** există ca logică, dar depinde încă de progresul narativ.
+- **Combatul** există într-o formă minimală și necesită extindere.
+- Interacțiunile cu NPC-uri sunt încă limitate.
+- Zonele există vizual, dar nu sunt populate consistent cu conținut.
+- Quest-urile principale și secundare sunt încă în fază de structură.
+
+---
+
+# Ce nu este încă implementat
+
+Următoarele sisteme există doar ca structură sau placeholder:
+
 - `game/quests/main_quest.rpy`
 - `game/quests/side_quests.rpy`
 - `game/quests/quest_data.rpy`
-- `game/systems/combat_system.rpy`
 - `game/systems/inventory_system.rpy`
 - `game/systems/npc_system.rpy`
 - `game/systems/quest_system.rpy`
@@ -86,32 +213,44 @@ Următoarele module există în repo, dar sunt încă goale sau aproape nefolosi
 - `game/ai/combat_adaptation.rpy`
 - `game/ai/reward_evaluator.rpy`
 
-Cu alte cuvinte, proiectul are deja:
-- **scheletul lumii**;
-- **identitatea vizuală de bază**;
-- **flow-ul minim jucabil**;
+---
 
-dar nu are încă:
-- bucla completă de quest-uri;
-- interacțiuni narative dezvoltate în fiecare zonă;
-- sistem de combat folosit în joc;
-- progresie completă între capitole;
-- finaluri și ramificații implementate efectiv.
+# Asset-uri și direcție vizuală
 
-### Asset-uri și prezentare
+Proiectul folosește:
+- UI custom în `game/gui/`;
+- background-uri dedicate;
+- sprite-uri pentru inamici;
+- icon-uri pentru combat.
 
-Partea de UI este deja bine susținută de asset-uri în `game/gui/`. În plus, proiectul folosește acum background-uri reale pentru:
-- intro;
-- locațiile principale;
-- conectorii relevanți de pe hartă.
+Prezentarea vizuală a depășit etapa de placeholder și începe să funcționeze ca un demo jucabil coerent.
 
-Asta înseamnă că prezentarea vizuală a trecut de etapa de placeholder pur și începe să semene cu un demo jucabil.
+---
 
-### Concluzie
+# Direcție de dezvoltare
 
-În forma actuală, proiectul nu este încă „feature complete”, dar este într-un punct bun pentru:
-- continuarea dezvoltării pe quest-uri și conținut;
-- iterarea pe flow-ul narativ;
-- transformarea rapidă a prototype-ului într-un demo mai coerent.
+Pașii următori vizați:
+- extinderea sistemului de combat;
+- integrarea quest-urilor reale;
+- dezvoltarea NPC-urilor;
+- reputație și facțiuni;
+- evenimente dinamice;
+- progresie narativă ramificată;
+- inventar și rewards reale;
+- polish vizual și audio.
 
-Cel mai mare câștig actual este că baza tehnică și direcția artistică sunt deja suficient de clare încât următorii pași să fie despre **conținut și integrare**, nu despre reconstrucția structurii.
+---
+
+# Concluzie
+
+În forma actuală, proiectul nu este încă „feature complete”, însă are:
+- o bază tehnică stabilă;
+- identitate vizuală clară;
+- flow minim jucabil;
+- fundație bună pentru extindere rapidă.
+
+Accentul dezvoltării a trecut de la construirea structurii către:
+- integrarea sistemelor;
+- conținut;
+- gameplay;
+- iterație narativă.
