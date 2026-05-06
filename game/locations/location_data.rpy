@@ -1,4 +1,7 @@
 init python:
+    BACKGROUND_DIR = "images/backgrounds"
+    BACKGROUND_FALLBACK = "#101010"
+
     LOCATIONS = {
         # Locații principale
         "targoviste": {
@@ -7,7 +10,7 @@ init python:
             "type":        "main",
             "chapter_unlock": 1,
             "connections": ["curtea_domneasca", "han"],
-            "background":  "bg_targoviste",
+            "background":  BACKGROUND_DIR + "/targoviste.png",
         },
         "curtea_domneasca": {
             "name":        "Curtea Domnească",
@@ -15,7 +18,7 @@ init python:
             "type":        "main",
             "chapter_unlock": 1,
             "connections": ["targoviste"],
-            "background":  "bg_curtea_domneasca",
+            "background":  BACKGROUND_DIR + "/curtea_domneasca.png",
         },
         "han": {
             "name":        "Hanul Corbului Negru",
@@ -23,7 +26,7 @@ init python:
             "type":        "main",
             "chapter_unlock": 1,
             "connections": ["targoviste", "padure"],
-            "background":  "bg_han",
+            "background":  BACKGROUND_DIR + "/han.png",
         },
         "padure": {
             "name":        "Pădurea Vlăsiei",
@@ -31,7 +34,7 @@ init python:
             "type":        "main",
             "chapter_unlock": 2,
             "connections": ["han", "tabara_otomana"],
-            "background":  "bg_padure",
+            "background":  BACKGROUND_DIR + "/padure.png",
         },
         "tabara_otomana": {
             "name":        "Tabăra otomană",
@@ -39,7 +42,7 @@ init python:
             "type":        "main",
             "chapter_unlock": 2,
             "connections": ["padure"],
-            "background":  "bg_tabara_otomana",
+            "background":  BACKGROUND_DIR + "/tabara_otomana.png",
         },
 
         # Drumuri / câmpuri — spații de legătură
@@ -49,7 +52,7 @@ init python:
             "type":        "connector",
             "chapter_unlock": 1,
             "connections": ["targoviste", "curtea_domneasca"],
-            "background":  "bg_drum_oras",
+            "background":  BACKGROUND_DIR + "/drum_oras.png",
         },
         "drum_targoviste_han": {
             "name":        "Drumul spre Han",
@@ -57,7 +60,7 @@ init python:
             "type":        "connector",
             "chapter_unlock": 1,
             "connections": ["targoviste", "han"],
-            "background":  "bg_drum_oras",
+            "background":  BACKGROUND_DIR + "/drum_oras.png",
         },
         "camp_han_padure": {
             "name":        "Câmpul deschis",
@@ -65,7 +68,7 @@ init python:
             "type":        "connector",
             "chapter_unlock": 2,
             "connections": ["han", "padure"],
-            "background":  "bg_camp",
+            "background":  BACKGROUND_DIR + "/camp.png",
         },
         "drum_padure_tabara": {
             "name":        "Poteca ascunsă",
@@ -73,7 +76,7 @@ init python:
             "type":        "connector",
             "chapter_unlock": 2,
             "connections": ["padure", "tabara_otomana"],
-            "background":  "bg_padure",
+            "background":  BACKGROUND_DIR + "/poteca_padure.png",
         },
     }
 
@@ -86,6 +89,60 @@ init python:
     def unlock_location(loc_id):
         if loc_id not in store.unlocked_locations:
             store.unlocked_locations.append(loc_id)
+
+    CONNECTOR_CELLS = {
+        (2, 4):  "drum_targoviste_han",
+        (2, 5):  "drum_targoviste_han",
+        (3, 3):  "drum_targoviste_han",
+        (3, 4):  "drum_targoviste_han",
+        (4, 0):  "drum_targoviste_han",
+        (4, 2):  "drum_targoviste_han",
+        (4, 3):  "drum_targoviste_han",
+        (5, 0):  "drum_targoviste_han",
+        (5, 3):  "drum_targoviste_han",
+        (6, 0):  "drum_targoviste_han",
+
+        (5, 4):  "camp_han_padure",
+        (6, 3):  "camp_han_padure",
+        (7, 2):  "camp_han_padure",
+        (7, 3):  "camp_han_padure",
+        (8, 3):  "camp_han_padure",
+        (8, 4):  "camp_han_padure",
+
+        (9, 4):  "drum_padure_tabara",
+        (9, 5):  "drum_padure_tabara",
+        (10, 5): "drum_padure_tabara",
+        (11, 6): "drum_padure_tabara",
+    }
+
+    def get_connector_at(row, col):
+        return CONNECTOR_CELLS.get((row, col))
+
+    def get_map_area_at(row, col):
+        zone = get_zone_at(row, col)
+        if zone:
+            return zone
+        return get_connector_at(row, col)
+
+    def location_background_path(loc_id):
+        return LOCATIONS.get(loc_id, {}).get("background")
+
+    def location_background_displayable(loc_id):
+        path = location_background_path(loc_id)
+        if path and renpy.loadable(path):
+            return Transform(
+                path,
+                xysize=(config.screen_width, config.screen_height),
+                fit="cover",
+                xalign=0.5,
+                yalign=0.5,
+            )
+        return Transform(
+            Solid(BACKGROUND_FALLBACK),
+            xysize=(config.screen_width, config.screen_height),
+            xalign=0.5,
+            yalign=0.5,
+        )
 
 init python:
     # Grila lumii: 12 rânduri × 12 coloane

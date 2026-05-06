@@ -17,6 +17,7 @@
 /files.txt
 /image_cache.txt
 /log.txt
+/lint_report.txt
 /save_dump.txt
 /traceback.txt
 

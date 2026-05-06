@@ -1,7 +1,10 @@
 screen grid_movement():
-    $ _zone      = get_zone_at(player_grid_row, player_grid_col)
-    $ _zone_name = location_name(_zone) if _zone else "Drum"
-    $ _zone_desc = (LOCATIONS.get(_zone, {}).get("description", "") if _zone else "") or "Un drum prăfuit, fără semne de viață."
+    $ _area      = get_map_area_at(player_grid_row, player_grid_col)
+    $ _bg        = location_background_displayable(_area) if _area else Solid(BACKGROUND_FALLBACK)
+    $ _zone_name = location_name(_area) if _area else "Drum"
+    $ _zone_desc = (LOCATIONS.get(_area, {}).get("description", "") if _area else "") or "Un drum prăfuit, fără semne de viață."
+
+    add _bg
 
     # Panou informații locație — stânga sus
     frame:
