@@ -2,7 +2,7 @@ default player_name = "Mara"
 default player_location = "targoviste"
 default player_grid_row = 2
 default player_grid_col = 1
-default unlocked_locations = ["targoviste", "han"]
+default unlocked_locations = ["targoviste", "curtea_domneasca", "han", "padure", "tabara_otomana"]
 default active_quests = []
 default completed_quests = []
 default inventory = {}
@@ -32,7 +32,7 @@ label init_game_state:
     $ player_location = "targoviste"
     $ player_grid_row = 2
     $ player_grid_col = 1
-    $ unlocked_locations = ["targoviste", "han"]
+    $ unlocked_locations = ["targoviste", "curtea_domneasca", "han", "padure", "tabara_otomana"]
     $ active_quests = []
     $ completed_quests = []
     $ inventory = {}

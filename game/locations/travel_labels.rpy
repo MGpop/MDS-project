@@ -155,3 +155,7 @@ label zone_actions_tabara_otomana:
     scene expression location_background_displayable("tabara_otomana") with dissolve
     "Soldații otomani te urmăresc cu privirea. Acum nu e momentul potrivit să acționezi."
     return
+label zone_actions_curtea_domneasca_open:
+    scene expression location_background_displayable("curtea_domneasca") with dissolve
+    "Curtea Domneasca este acum deschisa explorarii, dar continutul narativ de aici nu este inca implementat complet."
+    return
