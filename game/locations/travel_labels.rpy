@@ -20,7 +20,11 @@ label enter_curtea_domneasca:
 label enter_han:
     scene bg han with dissolve
 
-    $ han_has_ottoman = (not han_otoman_defeated) and renpy.random.randint(1, 100) <= 50
+    # versiunea cu o singura lupta
+    # $ han_has_ottoman = (not han_otoman_defeated) and renpy.random.randint(1, 100) <= 50
+
+    # versiunea cu numar nelimitat de lupte
+    $ han_has_ottoman = renpy.random.randint(1, 100) <= 50
 
     if han_has_ottoman:
 
