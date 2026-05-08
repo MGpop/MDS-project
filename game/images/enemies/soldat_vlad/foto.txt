@@ -1,0 +1,2 @@
+Fișier temporar legat de imaginile care vor trebui adăugate.
+Pentru dușmanii default avem nevoie de minim: "_default", "_spotted", "_fight", "_parry", "_light", "_heavy"

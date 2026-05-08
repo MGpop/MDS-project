@@ -1,0 +1,15 @@
+Fișier temporar legat de imaginile care vor trebui adăugate (obiecte pentru quest-uri).
+Se pot schimba în funcție de povestea finală.
+Pentru: items.rpy
+
+- sigiliu_ordin
+- scrisoare_secreta
+- pumnal
+- document_boieri
+- relicva_ordin
+- monede
+
+
+
+Sugerez și la o sau două imagine cu un obiect de sănătate. Nu are rost să ne complicăm cu prea multe.
+Mă gândeam la fructe (mere/fructe de pădure, ce găsește prin pădure sau le cumpără din piață).

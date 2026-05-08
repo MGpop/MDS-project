@@ -1,0 +1,3 @@
+Fișier temporar legat de imaginile care vor trebui adăugate.
+Momentan folosim un scut default, dar vom avea mai multe opțiuni.
+Fiecare opțiune va avea avantaje și eventual dezavantaje.
