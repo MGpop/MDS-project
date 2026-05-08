@@ -36,7 +36,7 @@ screen grid_movement():
                 hbox:
                     spacing 0
                     for c in range(GRID_COLS):
-                        $ _mc = "#FFFFFF" if (r == player_grid_row and c == player_grid_col) else MINIMAP_COLORS.get(get_cell_char(r, c), "#1A1A1A")
+                        $ _mc = "#FFFFFF" if (r == player_grid_row and c == player_grid_col) else get_minimap_color_at(r, c)
                         add Solid(_mc, xsize=11, ysize=11)
 
     # D-pad — centru jos (vbox direct la nivel de ecran, yalign 1.0 ancorează jos)
@@ -95,7 +95,9 @@ label grid_map:
 
     if _dir == "interact":
         $ _z = get_zone_at(player_grid_row, player_grid_col)
-        if _z and renpy.has_label("zone_actions_" + _z):
+        if _z == "curtea_domneasca" and renpy.has_label("zone_actions_curtea_domneasca_open"):
+            call zone_actions_curtea_domneasca_open
+        elif _z and renpy.has_label("zone_actions_" + _z):
             call expression "zone_actions_" + _z
         else:
             "Nu ai ce face acum. Continuă să explorezi."

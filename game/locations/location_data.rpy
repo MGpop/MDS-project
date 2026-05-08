@@ -84,11 +84,24 @@ init python:
         return LOCATIONS.get(loc_id, {}).get("name", loc_id)
 
     def is_location_unlocked(loc_id):
-        return loc_id in store.unlocked_locations
+        # The map is fully open, so every defined location is explorable.
+        return loc_id in LOCATIONS
 
     def unlock_location(loc_id):
-        if loc_id not in store.unlocked_locations:
+        if loc_id in LOCATIONS and loc_id not in store.unlocked_locations:
             store.unlocked_locations.append(loc_id)
+
+    MINIMAP_AREA_COLORS = {
+        "targoviste":            "#8B6B4A",
+        "curtea_domneasca":      "#5F6F7F",
+        "han":                   "#C9782A",
+        "padure":                "#2E8B57",
+        "tabara_otomana":        "#C59D0B",
+        "drum_targoviste_curtea":"#AAB7C4",
+        "drum_targoviste_han":   "#A9684A",
+        "camp_han_padure":       "#86A64F",
+        "drum_padure_tabara":    "#D49A1F",
+    }
 
     CONNECTOR_CELLS = {
         (2, 4):  "drum_targoviste_han",
@@ -115,14 +128,37 @@ init python:
         (11, 6): "drum_padure_tabara",
     }
 
+    CONNECTOR_ANCHORS = {
+        "drum_targoviste_curtea": (1, 4),
+        "drum_targoviste_han":    (4, 2),
+        "camp_han_padure":        (7, 4),
+        "drum_padure_tabara":     (9, 6),
+    }
+
     def get_connector_at(row, col):
-        return CONNECTOR_CELLS.get((row, col))
+        explicit = CONNECTOR_CELLS.get((row, col))
+        if explicit:
+            return explicit
+
+        if get_cell_char(row, col) != '_':
+            return None
+
+        return min(
+            CONNECTOR_ANCHORS,
+            key=lambda connector_id: abs(row - CONNECTOR_ANCHORS[connector_id][0]) + abs(col - CONNECTOR_ANCHORS[connector_id][1])
+        )
 
     def get_map_area_at(row, col):
         zone = get_zone_at(row, col)
         if zone:
             return zone
         return get_connector_at(row, col)
+
+    def get_minimap_color_at(row, col):
+        area = get_map_area_at(row, col)
+        if area:
+            return MINIMAP_AREA_COLORS.get(area, "#707070")
+        return "#1A1A1A"
 
     def location_background_path(loc_id):
         return LOCATIONS.get(loc_id, {}).get("background")
@@ -164,6 +200,23 @@ init python:
         "####__PPOOO#",   # rând 9
         "#####__OOO##",   # rând 10
         "######_#OO##",   # rând 11
+    ]
+
+    # Override the prototype walls so the entire in-bounds map is explorable
+    # and the minimap no longer shows internal blocked cells.
+    WORLD_GRID = [
+        "__CCCC______",   # rând 0
+        "_TTCC_______",   # rând 1
+        "TTTT________",   # rând 2
+        "TTT_________",   # rând 3
+        "_T__________",   # rând 4
+        "_HH_________",   # rând 5
+        "_HH_PPP_____",   # rând 6
+        "____PPPP____",   # rând 7
+        "____PPPPOO__",   # rând 8
+        "______PPOOO_",   # rând 9
+        "_______OOO__",   # rând 10
+        "________OO__",   # rând 11
     ]
 
     ZONE_CHARS = {
