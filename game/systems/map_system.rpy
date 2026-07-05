@@ -141,6 +141,16 @@ screen grid_movement():
             text _zone_name style "grid_zone_title"
             text _zone_desc style "grid_zone_desc"
 
+    # Butoane rapide — stânga sus, sub panoul locației
+    hbox:
+        xpos 20
+        ypos 148
+        spacing 8
+
+        textbutton "Inventar (I)":
+            action Return("open_inventory")
+            style "hud_btn"
+
     # Minimapă — dreapta sus
     button:
         xalign 1.0
@@ -234,7 +244,8 @@ screen grid_movement():
     key "K_RETURN"   action Return("interact")
     key "K_KP_ENTER" action Return("interact")
     key "K_SPACE"    action Return("interact")
-    key "K_m" action Return("open_map")
+    key "K_m"        action Return("open_map")
+    key "K_i"        action Return("open_inventory")
 
 
 screen grid_second_direction(first_dir):
@@ -260,6 +271,10 @@ label grid_map:
 
     if _dir == "open_map":
         call open_world_fast_travel_map
+        jump grid_map
+
+    if _dir == "open_inventory":
+        call open_inventory
         jump grid_map
 
     if _dir == "interact":
@@ -355,6 +370,18 @@ style dpad_center_btn_text:
     size 30
     color "#88CCAA"
     hover_color "#AAFFCC"
+
+style hud_btn:
+    xpadding 14
+    ypadding 8
+    background Solid("#000000CC")
+    hover_background Solid("#3A2712DD")
+
+style hud_btn_text:
+    color "#E8D5A3"
+    hover_color "#FFD700"
+    size 18
+    outlines [(1, "#000000", 1, 1)]
 
 style grid_zone_title:
     font "fonts/Cinzel/static/Cinzel-SemiBold.ttf"

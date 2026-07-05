@@ -1,2 +1,0 @@
-Fișier temporar legat de imaginile care vor trebui adăugate.
-Dacă adăugăm mai multe tipuri de armuri (coif, chestplate, boots etc.) ar fi util să le punem în foldere separate aici.

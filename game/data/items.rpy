@@ -30,12 +30,13 @@ init python:
         #     "type":        "relic",
         #     "stackable":   False,
         # },
-        # "monede": {
-        #     "name":        "Monede",
-        #     "description": "Bani pentru mită sau cumpărături.",
-        #     "type":        "currency",
-        #     "stackable":   True,
-        # },
+        "monede": {
+            "name":        "Monede",
+            "description": "Bani pentru mită sau cumpărături.",
+            "type":        "currency",
+            "stackable":   True,
+        },
+        
         "cufar_boier": {
             "name":        "Cufărul boierului",
             "description": "Un cufăr greu, întărit cu fier. Boierul spune că i-a fost furat de haiduci.",
@@ -48,6 +49,13 @@ init python:
             "description": "O pecete boierească ce îți poate permite intrarea în Târgoviște.",
             "type":        "key",
             "stackable":   False,
+        },
+
+        "merinde": {
+            "name":        "Merinde",
+            "description": "Provizii. Foloseștele pentru a te vindeca.",
+            "type":        "health",
+            "stackable":   True,
         },
     }
 
