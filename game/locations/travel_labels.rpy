@@ -4,168 +4,240 @@
 
 default han_otoman_defeated = False
 
-label enter_targoviste:
-    $ player_location = "targoviste"
-    scene expression location_background_displayable("targoviste") with dissolve
-    "Târgoviște. Zgomotul orașului te înconjoară — roți pe pietre, strigăte de negustori, și priviri care nu te privesc direct."
+label zone_actions_zsat:
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
+
+    if player_grid_row != 26 or player_grid_col != 5:
+        "Nu ai ce face aici acum."
+        return
+
+    if not talked_to_old_man:
+        "Bătrânul satului stă lângă poartă, sprijinit în toiag."
+
+        batran "Ai drum spre Târgoviște, nu-i așa?"
+        batran "Nu vei intra acolo fără document de trecere."
+        batran "Mergi pe drum până la fântână, apoi ține dreapta spre han."
+        batran "La Hanul Corbului Negru găsești oameni care pot deschide uși. Sau le pot închide pentru totdeauna."
+
+        $ talked_to_old_man = True
+        $ road_to_wolf_unlocked = True
+
+        $ unlock_cells([
+            (26, 6),
+            (25, 7),
+            (24, 7),
+            (23, 7),
+            (22, 7),
+        ])
+
+        narrator "Drumul spre han a fost deblocat."
+
+    else:
+        "Bătrânul privește spre drum."
+        batran "Ține minte: până la fântână, apoi la dreapta. Hanul nu-i departe."
+
     return
 
-label enter_curtea_domneasca:
-    $ player_location = "curtea_domneasca"
-    scene expression location_background_displayable("curtea_domneasca") with dissolve
-    "Porțile Curții Domnești se deschid în fața ta. Soldații te urmăresc cu privirea. Fiecare pas e numărat."
+
+
+
+
+label enter_zhan:
+    $ player_location = "zhan"
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
+    "Lumea te așteaptă. Povestea ta începe acum."
     return
 
-# luptă demo
-label enter_han:
-    scene bg han with dissolve
+label zone_actions_zhan:
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
 
-    # versiunea cu o singura lupta
-    # $ han_has_ottoman = (not han_otoman_defeated) and renpy.random.randint(1, 100) <= 50
+    if player_grid_row != 14 or player_grid_col != 9:
+        "Hanul vuiește încet: pași, șoapte, lemn vechi și pahare trântite pe mese."
+        "Nu pare să fie nimic important aici acum."
+        return
 
-    # versiunea cu numar nelimitat de lupte
-    $ han_has_ottoman = renpy.random.randint(1, 100) <= 50
+    if boier_defeated:
+        "Locul boierului este gol."
+        "Pe masă au rămas doar urme de vin și o tăcere stânjenitoare."
+        return
 
-    if han_has_ottoman:
+    if boier_chest_returned:
+        boier "Ți-am dat pecetea. Nu mai avem nimic de împărțit."
+        return
 
-        $ otoman_starts_fight = renpy.random.randint(1, 100) <= 50
-
-        if otoman_starts_fight:
-            show otoman_spotted at enemy_alert_pos with dissolve
-            "Soldatul otoman te vede și pune mâna pe armă."
-
-            hide otoman_spotted with dissolve
-            call start_combat("soldat_otoman", "grid_map")
-            if combat_last_result == "victory":
-                $ han_otoman_defeated = True
-            return
-
+    if got_city_seal:
+        if city_seal_method == "stolen_from_boier":
+            "Boierul nu mai are ce să-ți dea."
         else:
-            show otoman_default at enemy_idle_pos with dissolve
-            "Un soldat otoman stă în han, dar nu pare interesat de tine."
+            boier "Pecetea e la tine. Folosește-o cu grijă."
+        return
 
-            menu:
-                "Ce faci?"
-                "Îl ignor":
-                    "Îți vezi de treabă."
-                    return
+    if not met_boier_han:
+        "Un boier stă singur la o masă, cu mantia strânsă în jurul umerilor."
+        "Are în față o cupă neatinsă și privește spre ușă de parcă așteaptă vești proaste."
 
-                "Îl confrunt":
-                    hide otoman_default with dissolve
-                    call start_combat("soldat_otoman", "grid_map")
-                    if combat_last_result == "victory":
-                        $ han_otoman_defeated = True
-                    return
+        boier "Tu. Pari om de drum."
+        boier "Niște haiduci mi-au furat un cufăr. Nu era al lor. Nu era nici treaba lor ce se află în el."
+        boier "Adu-mi-l înapoi și îți dau o pecete de trecere."
+        boier "Cu ea, porțile Târgoviștei se deschid mai ușor."
 
-    "Hanul e liniștit."
-    return
+        $ met_boier_han = True
+        $ boier_chest_quest_started = True
+        $ forest_unlocked_by_boier = True
+        $ unlock_zone("zpadure", unlock_fast=False)
 
-label zone_actions_targoviste:
-    scene expression location_background_displayable("targoviste") with dissolve
+        narrator "Pădurea Vlăsiei a fost deblocată."
+        return
 
-    if "q01_investigatie" not in active_quests and "q01_investigatie" not in completed_quests:
-        calin "Bine că ai ajuns, [player_name]. Ordinul te-a trimis la momentul potrivit."
-        calin "Se vorbește că boierii din han uneltesc ceva — o alianță secretă cu otomanii. Poate mai mult."
-        calin "Du-te la Hanul Corbului Negru. Ascultă. Caută. Dacă găsești dovezi, adu-mi-le."
-        $ active_quests.append("q01_investigatie")
-        $ add_item("pumnal")
-        "Călin îți întinde un pumnal cu lama înnegrită."
-        narrator "Ai primit: {b}Pumnal{/b}. Misiune activă: {i}Investighează Hanul{/i}."
-
-    elif "q01_investigatie" in active_quests and has_item("scrisoare_secreta"):
-        calin "Ai revenit. Și cu dovezi, se pare."
-        calin "Această scrisoare poate schimba multe. Ce vrei să faci cu ea?"
-
+    if has_item("cufar_boier"):
         menu:
-            "Îi dai scrisoarea lui Călin":
-                $ remove_item("scrisoare_secreta")
-                $ has_secret_letter = False
-                $ dragon_order_trust += 1
-                calin "Bine. Ordinul va ști ce să facă cu asta. Ai acționat corect."
-                narrator "Scrisoarea a ajuns în mâinile Ordinului. Ordinul are încredere în tine."
+            "Ce faci cu cufărul?"
+            "Îi dai cufărul boierului":
+                $ remove_item("cufar_boier")
+                $ add_item("pecete_targoviste")
+                $ got_city_seal = True
+                $ boier_chest_returned = True
+                $ city_seal_method = "boier_reward"
 
-            "O păstrezi pentru Vlad":
-                $ loyalty_vlad += 1
-                calin "Înțeleg. Ai grijă cu ea — și cu tine."
-                narrator "Ai păstrat scrisoarea. Poate fi mai utilă direct la Curtea Domnească."
+                boier "Bine. Ai făcut ce ai promis."
+                boier "Ia pecetea. Arat-o la poarta Târgoviștei și nu pomeni numele meu mai mult decât trebuie."
 
-        $ completed_quests.append("q01_investigatie")
-        $ active_quests.remove("q01_investigatie")
-        narrator "— Capitolul I: Investigația — {b}Completat{/b} —"
-        narrator "Aceasta este versiunea demo. Povestea continuă în capitolele următoare..."
+                narrator "Ai primit Pecetea de trecere."
 
-    elif "q01_investigatie" in active_quests:
-        calin "Încă nu ai fost la Han? Nu avem timp de pierdut, [player_name]."
+            "Îl păstrezi deocamdată":
+                boier "Nu mă face să regret că am vorbit cu tine."
 
-    else:
-        calin "Ai dovedit că ești un agent de nădejde al Ordinului."
+        return
 
-    return
+    if boier_fight_done:
+        boier "Nu-ți mai încerca norocul cu mine."
+        return
 
+    menu:
+        "Boierul te privește nerăbdător."
 
-label zone_actions_han:
-    scene bg han with dissolve
+        "Îi spui că vei aduce cufărul":
+            boier "Atunci nu pierde vremea aici. Haiducii nu așteaptă să fie găsiți."
 
-    if "q01_investigatie" in active_quests and not has_item("scrisoare_secreta"):
-        "Scanezi hanul cu privirea. Prea mulți oameni, prea puține conversații."
-        "Sub o masă, ascuns în grabă, găsești un teanc de hârtii legate cu o panglică roșie."
-        "Le desfaci rapid. O scrisoare codificată — cu sigiliul unui boier."
-        $ add_item("scrisoare_secreta")
-        $ has_secret_letter = True
-        narrator "Ai găsit: {b}Scrisoare secretă{/b}."
+        "Îl ataci și încerci să-i iei pecetea":
+            $ boier_fight_done = True
+            $ boier_attacked = True
+            $ combat_last_result = None
 
-        mircea "Hei! Pune jos ce-ai găsit acolo."
+            boier "Așa deci."
+            boier "Să vedem dacă ai și braț pentru obrăznicia asta."
 
-        menu:
-            "Mircea Bălan?"
-            "Un călător obosit — nu am văzut nimic.":
-                mircea "Hmm. Pleacă de-aici. Locul ăsta nu e pentru curioși."
-                "[player_name] decide să nu insiste și să ducă scrisoarea lui Călin."
+            call start_combat("boier_han", "grid_map")
 
-            "Te cunosc, Mircea. Știu ce plănuiești.":
-                $ loyalty_boyars += 1
-                mircea "Atunci știi că e mai înțelept să taci. Suntem pe aceeași parte, dacă ești deștept."
-                narrator "Mircea Bălan pare să te considere un potențial aliat."
-
-    elif has_item("scrisoare_secreta"):
-        "Ai scrisoarea. E timpul să te întorci la Călin în Târgoviște."
-
-    else:
-        "Hanul e liniștit. Nimic de remarcat."
+        "Îl lași în pace":
+            "Boierul își întoarce privirea spre cupa neatinsă."
 
     return
 
 
-label zone_actions_curtea_domneasca:
-    scene expression location_background_displayable("curtea_domneasca") with dissolve
-    "Garda îți blochează calea. Accesul la Curte nu este permis acum."
-    return
 
 
-label enter_padure:
-    $ player_location = "padure"
-    scene expression location_background_displayable("padure") with dissolve
+label enter_zpadure:
+    $ player_location = "zpadure"
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
     "Pădurea Vlăsiei te înghite. Lumina dispare imediat ce intri sub coroanele copacilor. Ceva scârțâie în ramuri."
     return
 
-label enter_tabara_otomana:
-    $ player_location = "tabara_otomana"
-    scene expression location_background_displayable("tabara_otomana") with dissolve
+label zone_actions_zpadure:
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
+
+    if player_grid_row != 3 or player_grid_col != 3:
+        "Pădurea foșnește în jurul tău."
+        "Nu pare să fie nimeni aici."
+        return
+
+    if not boier_chest_quest_started:
+        "Un bărbat cu haine ponosite stă rezemat de un copac."
+        "Te măsoară din priviri, dar nu pare să aibă motiv să-ți vorbească."
+        return
+
+    if boier_chest_returned:
+        "Locul haiducului e gol."
+        "Povestea cufărului s-a încheiat deja."
+        return
+
+    if has_item("cufar_boier"):
+        "Cufărul boierului este deja la tine."
+        "Nu mai ai ce să cauți aici acum."
+        return
+
+    if haiduc_cufar_defeated:
+        "Haiducul zace învins, iar cufărul nu mai este aici."
+        return
+
+    if not met_haiduc_cufar:
+        "Un haiduc iese dintre copaci, fără grabă."
+        "Nu pare surprins că l-ai găsit."
+
+        haiduc "Te-a trimis boierul, nu-i așa?"
+        haiduc "Se vede pe fața ta. Numai oamenii trimiși de boieri vin în pădure cu atâta dreptate în glas."
+
+        $ met_haiduc_cufar = True
+
+    menu:
+        "Ce faci?"
+
+        "Îl acuzi că a furat cufărul boierului":
+            $ haiduc_cufar_accused = True
+
+            player "Ai furat cufărul boierului."
+            player "Îl vreau înapoi."
+
+            haiduc "Furat?"
+            haiduc "Așa ți-a spus el?"
+            haiduc "Bine. Dacă ai venit să judeci, judecă-mă cu fierul în mână."
+
+            menu:
+                "Cum răspunzi?"
+
+                "Îl confrunți":
+                    $ haiduc_cufar_fight_done = True
+                    $ combat_last_result = None
+
+                    haiduc "Atunci vino."
+
+                    call start_combat("haiduc_cufar", "grid_map")
+
+                "Îl lași în pace momentan":
+                    haiduc "Înțelept. Sau doar nehotărât."
+                    haiduc "Când te hotărăști, mă găsești aici."
+
+        "Îl lași în pace momentan":
+            haiduc "Pădurea e destul de mare pentru amândoi, câtă vreme nu calci unde nu trebuie."
+
+    return
+
+
+
+
+
+label enter_ztargoviste:
+    $ player_location = "ztargoviste"
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
+    "Târgoviște. Zgomotul orașului te înconjoară — roți pe pietre, strigăte de negustori, și priviri care nu te privesc direct."
+    return
+
+
+
+
+
+label enter_zcurte:
+    $ player_location = "zcurte"
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
+    "Porțile Curții Domnești se deschid în fața ta. Soldații te urmăresc cu privirea. Fiecare pas e numărat."
+    return
+
+
+
+
+
+label enter_zotomani:
+    $ player_location = "zotomani"
+    scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
     "Dai semnalul convenit. Un soldat otoman apare din umbră și te conduce înăuntru, fără un cuvânt."
-    return
-
-
-label zone_actions_padure:
-    scene expression location_background_displayable("padure") with dissolve
-    "Pădurea șoptește. Nu e nimic de găsit aici, deocamdată."
-    return
-
-
-label zone_actions_tabara_otomana:
-    scene expression location_background_displayable("tabara_otomana") with dissolve
-    "Soldații otomani te urmăresc cu privirea. Acum nu e momentul potrivit să acționezi."
-    return
-label zone_actions_curtea_domneasca_open:
-    scene expression location_background_displayable("curtea_domneasca") with dissolve
-    "Curtea Domneasca este acum deschisa explorarii, dar continutul narativ de aici nu este inca implementat complet."
     return

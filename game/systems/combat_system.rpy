@@ -2,6 +2,8 @@
 # Combat semi-real-time simulat printr-un loop cu cooldown-uri independente.
 # Playerul si inamicul au propriile actiuni, propriile delay-uri si propriile ferestre de parare.
 
+default combat_return_label = "grid_map"
+
 # Date combat curent.
 default combat_enemy_id = None
 default combat_enemy_name = "Inamic"
@@ -112,6 +114,7 @@ init python:
         return move_id
 
 label start_combat(enemy_id="haiduc", return_label="grid_map"):
+    $ combat_return_label = return_label
     $ enemy_stats = get_enemy_combat_stats(enemy_id)
     $ combat_enemy_id = enemy_id
     $ combat_enemy_name = enemy_stats["name"]
@@ -144,7 +147,7 @@ label start_combat(enemy_id="haiduc", return_label="grid_map"):
         "Încep lupta":
             jump start_combat_after_save_check
         "Mă retrag":
-            jump expression return_label
+            jump expression combat_return_label
 
 label start_combat_after_save_check:
     $ in_combat = True
@@ -290,8 +293,27 @@ label combat_victory:
     $ combat_player_parry_until = 0.0
     $ combat_enemy_parry_until = 0.0
     $ combat_last_result = "victory"
+
+    if combat_enemy_id == "lup":
+        $ wolf_tutorial_done = True
+        $ wolf_tutorial_active = False
+        $ unlock_zone("zhan", unlock_fast=False)
+
+    if combat_enemy_id == "boier_han":
+        $ boier_fight_done = True
+        $ boier_attacked = True
+        $ boier_defeated = True
+        $ got_city_seal = True
+        $ city_seal_method = "stolen_from_boier"
+        $ add_item("pecete_targoviste")
+
+    if combat_enemy_id == "haiduc_cufar":
+        $ haiduc_cufar_fight_done = True
+        $ haiduc_cufar_defeated = True
+        $ add_item("cufar_boier")
+
     "[combat_enemy_name] cade. Lupta s-a terminat."
-    jump expression return_label
+    jump expression combat_return_label
 
 label player_death:
     $ in_combat = False

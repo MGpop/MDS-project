@@ -1,17 +1,16 @@
 init python:
     def get_fast_travel_options():
         return [
-            loc_id for loc_id, data in LOCATIONS.items()
-            if data.get("type") == "main"
-            and is_location_unlocked(loc_id)
-            and loc_id != player_location
+            zone_id for zone_id in ZONE_FAST_TRAVEL.keys()
+            if store.unlocked_fast.get(zone_id, False)
+            and zone_id != store.player_location
         ]
 
 label fast_travel_menu:
     $ _options = get_fast_travel_options()
 
     if not _options:
-        "Nu ai alte locații deblocate spre care să călătorești rapid."
+        "Nu ai alte zone deblocate spre care să călătorești rapid."
         return
 
     "Unde vrei să mergi?"
@@ -26,8 +25,11 @@ label fast_travel_menu:
 
     "[player_name] se deplasează rapid spre [location_name(_choice)]."
     $ player_location = _choice
-    $ _pos = ZONE_START_POS.get(_choice, (0, 0))
+    $ _pos = ZONE_FAST_TRAVEL.get(_choice, (29, 0))
     $ player_grid_row = _pos[0]
     $ player_grid_col = _pos[1]
-    call expression "enter_" + _choice
+
+    if renpy.has_label("enter_" + _choice):
+        call expression "enter_" + _choice
+
     jump grid_map
