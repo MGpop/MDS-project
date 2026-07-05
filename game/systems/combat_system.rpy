@@ -114,6 +114,8 @@ init python:
         return move_id
 
 label start_combat(enemy_id="haiduc", return_label="grid_map"):
+    $ ensure_default_equipment()
+    $ sync_combat_move_stats()
     $ combat_return_label = return_label
     $ enemy_stats = get_enemy_combat_stats(enemy_id)
     $ combat_enemy_id = enemy_id
@@ -205,15 +207,15 @@ label combat_loop:
 
 label combat_start_player_parry:
     $ combat_player_action = "parry"
-    $ combat_player_visual = "player_parry"
+    $ combat_player_visual = combat_visual_for_player_action("parry")
     $ combat_player_busy_until = combat_time + COMBAT_MOVES["parry"]["delay"]
     $ combat_player_parry_until = combat_player_busy_until
-    $ combat_status_message = "Ridici garda. Timp de 2 secunde nu primești damage."
+    $ combat_status_message = "Ridici garda. Timp de " + str(COMBAT_MOVES["parry"]["delay"]) + " secunde nu primești damage."
     jump combat_loop
 
 label combat_start_player_light:
     $ combat_player_action = "light"
-    $ combat_player_visual = "player_light"
+    $ combat_player_visual = combat_visual_for_player_action("light")
     $ combat_player_busy_until = combat_time + COMBAT_MOVES["light"]["delay"]
     $ combat_player_action_damage = combat_roll_player_damage("light")
     $ combat_status_message = "Pregătești un light blow."
@@ -221,7 +223,7 @@ label combat_start_player_light:
 
 label combat_start_player_heavy:
     $ combat_player_action = "heavy"
-    $ combat_player_visual = "player_heavy"
+    $ combat_player_visual = combat_visual_for_player_action("heavy")
     $ combat_player_busy_until = combat_time + COMBAT_MOVES["heavy"]["delay"]
     $ combat_player_action_damage = combat_roll_player_damage("heavy")
     $ combat_status_message = "Pregătești un heavy blow. Ești expus mai mult timp."
@@ -412,7 +414,7 @@ screen combat_hud(can_choose=False, shown_time=None):
                 textbutton "Heavy blow" action Return("heavy") sensitive player_ready
 
             if player_ready:
-                text "Parare: 2s fără damage. Light: 1s, damage mic. Heavy: 2.8s, damage mare." size 20
+                text "Parare: [COMBAT_MOVES['parry']['delay']]s fără damage. Light: [COMBAT_MOVES['light']['delay']]s. Heavy: [COMBAT_MOVES['heavy']['delay']]s." size 20
             else:
                 text "Așteaptă să se termine acțiunea curentă. Lupta continuă între timp." size 20
 

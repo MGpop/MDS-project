@@ -36,7 +36,7 @@ init python:
             "type":        "currency",
             "stackable":   True,
         },
-        
+
         "cufar_boier": {
             "name":        "Cufărul boierului",
             "description": "Un cufăr greu, întărit cu fier. Boierul spune că i-a fost furat de haiduci.",
@@ -56,6 +56,13 @@ init python:
             "description": "Provizii. Foloseștele pentru a te vindeca.",
             "type":        "health",
             "stackable":   True,
+        },
+
+        "cupa_fantana": {
+            "name":        "Cupa de aur din legende",
+            "description": "Nimeni nu îndrăznește să fure de sub nasul lui Țepeș. Această cupă își are locul la fântână.",
+            "type":        "side-quest",
+            "stackable":   False,
         },
     }
 

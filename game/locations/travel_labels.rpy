@@ -16,6 +16,13 @@ label zone_actions_zsat:
 
         batran "Ai drum spre Târgoviște, nu-i așa?"
         batran "Nu vei intra acolo fără document de trecere."
+        batran "Dar nici până la han nu ajungi cu mâinile goale."
+        batran "Ia astea. Nu sunt noi, dar au ținut oameni în viață."
+
+        $ grant_arm_set("soldat", equip=True)
+
+        narrator "Ai primit primul set de arme: pumnal, sabie și scut de soldat."
+
         batran "Mergi pe drum până la fântână, apoi ține dreapta spre han."
         batran "La Hanul Corbului Negru găsești oameni care pot deschide uși. Sau le pot închide pentru totdeauna."
 
@@ -33,8 +40,13 @@ label zone_actions_zsat:
         narrator "Drumul spre han a fost deblocat."
 
     else:
-        "Bătrânul privește spre drum."
-        batran "Ține minte: până la fântână, apoi la dreapta. Hanul nu-i departe."
+        if not player_has_arm_set("soldat"):
+            batran "Văd că ai rămas fără armele pe care trebuia să le ai. Ia-le acum."
+            $ grant_arm_set("soldat", equip=True)
+            narrator "Ai primit setul de arme de soldat."
+        else:
+            "Bătrânul privește spre drum."
+            batran "Ține minte: până la fântână, apoi la dreapta. Hanul nu-i departe."
 
     return
 
@@ -167,7 +179,11 @@ label zone_actions_zpadure:
         return
 
     if haiduc_cufar_defeated:
-        "Haiducul zace învins, iar cufărul nu mai este aici."
+        if not player_has_arm_set("haiduc"):
+            $ grant_arm_set("haiduc", equip=False)
+            narrator "Ai recuperat și armele haiducului. Le poți echipa din meniul Arme."
+        else:
+            "Haiducul zace învins, iar cufărul nu mai este aici."
         return
 
     if not met_haiduc_cufar:
@@ -201,7 +217,7 @@ label zone_actions_zpadure:
 
                     haiduc "Atunci vino."
 
-                    call start_combat("haiduc_cufar", "grid_map")
+                    call start_combat("haiduc_cufar", "after_haiduc_cufar_combat")
 
                 "Îl lași în pace momentan":
                     haiduc "Înțelept. Sau doar nehotărât."
@@ -212,6 +228,12 @@ label zone_actions_zpadure:
 
     return
 
+label after_haiduc_cufar_combat:
+    if combat_last_result == "victory":
+        $ grant_arm_set("haiduc", equip=False)
+        narrator "Ai luat armele haiducului. Le poți echipa din meniul Arme."
+
+    jump grid_map
 
 
 
@@ -225,13 +247,11 @@ label enter_ztargoviste:
 
 
 
-
 label enter_zcurte:
     $ player_location = "zcurte"
     scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
     "Porțile Curții Domnești se deschid în fața ta. Soldații te urmăresc cu privirea. Fiecare pas e numărat."
     return
-
 
 
 

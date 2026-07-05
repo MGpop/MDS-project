@@ -151,6 +151,10 @@ screen grid_movement():
             action Return("open_inventory")
             style "hud_btn"
 
+        textbutton "Arme (P)":
+            action Return("open_arms")
+            style "hud_btn"
+
     # Minimapă — dreapta sus
     button:
         xalign 1.0
@@ -246,6 +250,7 @@ screen grid_movement():
     key "K_SPACE"    action Return("interact")
     key "K_m"        action Return("open_map")
     key "K_i"        action Return("open_inventory")
+    key "K_p"        action Return("open_arms")
 
 
 screen grid_second_direction(first_dir):
@@ -266,6 +271,7 @@ screen grid_second_direction(first_dir):
 
 
 label grid_map:
+    $ sync_combat_move_stats()
     call screen grid_movement
     $ _dir = _return
 
@@ -275,6 +281,10 @@ label grid_map:
 
     if _dir == "open_inventory":
         call open_inventory
+        jump grid_map
+
+    if _dir == "open_arms":
+        call open_arms
         jump grid_map
 
     if _dir == "interact":
