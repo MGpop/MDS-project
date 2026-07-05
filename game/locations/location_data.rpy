@@ -2,6 +2,9 @@ init python:
     BACKGROUND_DIR = "images/backgrounds"
     BACKGROUND_FALLBACK = "#101010"
 
+    MINIMAP_LOCKED_COLOR = "#242424"
+    MINIMAP_PLAYER_COLOR = "#FFFFFF"
+
     CELL_BACKGROUNDS = {
         "G": BACKGROUND_DIR + "/camp.png",
         "#": BACKGROUND_DIR + "/campie.png",
@@ -108,6 +111,32 @@ init python:
     def get_minimap_color_at(row, col):
         cell = get_cell_char(row, col)
         return MINIMAP_COLORS.get(cell, "#1A1A1A")
+
+    def is_minimap_cell_revealed(row, col):
+        zone_id = get_zone_at(row, col)
+
+        if zone_id is None:
+            return False
+
+        if row == store.player_grid_row and col == store.player_grid_col:
+            return True
+
+        if (row, col) in store.unlocked_cells:
+            return True
+
+        if is_location_unlocked(zone_id):
+            return True
+
+        return False
+
+    def get_minimap_display_color_at(row, col):
+        if row == store.player_grid_row and col == store.player_grid_col:
+            return MINIMAP_PLAYER_COLOR
+
+        if not is_minimap_cell_revealed(row, col):
+            return MINIMAP_LOCKED_COLOR
+
+        return get_minimap_color_at(row, col)
 
     def grid_background_path(row, col):
         cell = get_cell_char(row, col)

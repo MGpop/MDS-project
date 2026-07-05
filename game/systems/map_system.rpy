@@ -142,23 +142,30 @@ screen grid_movement():
             text _zone_desc style "grid_zone_desc"
 
     # Minimapă — dreapta sus
-    frame:
+    button:
         xalign 1.0
         yalign 0.0
-        xoffset -20
-        yoffset 20
-        xpadding 5
-        ypadding 5
-        background Solid("#000000CC")
+        xoffset -12
+        yoffset 12
+        xpadding 0
+        ypadding 0
+        background None
+        hover_background Solid("#FFFFFF22")
+        action Return("open_map")
 
-        vbox:
-            spacing 0
-            for r in range(GRID_ROWS):
-                hbox:
-                    spacing 0
-                    for c in range(GRID_COLS):
-                        $ _mc = "#FFFFFF" if (r == player_grid_row and c == player_grid_col) else get_minimap_color_at(r, c)
-                        add Solid(_mc, xsize=11, ysize=11)
+        frame:
+            xpadding 4
+            ypadding 4
+            background Solid("#000000CC")
+
+            vbox:
+                spacing 0
+                for r in range(GRID_ROWS):
+                    hbox:
+                        spacing 0
+                        for c in range(GRID_COLS):
+                            $ _mc = get_minimap_display_color_at(r, c)
+                            add Solid(_mc, xsize=7, ysize=7)
 
     # D-pad — 8 direcții pentru mouse
     vbox:
@@ -227,6 +234,7 @@ screen grid_movement():
     key "K_RETURN"   action Return("interact")
     key "K_KP_ENTER" action Return("interact")
     key "K_SPACE"    action Return("interact")
+    key "K_m" action Return("open_map")
 
 
 screen grid_second_direction(first_dir):
@@ -249,6 +257,10 @@ screen grid_second_direction(first_dir):
 label grid_map:
     call screen grid_movement
     $ _dir = _return
+
+    if _dir == "open_map":
+        call open_world_fast_travel_map
+        jump grid_map
 
     if _dir == "interact":
         $ _z = get_zone_at(player_grid_row, player_grid_col)
