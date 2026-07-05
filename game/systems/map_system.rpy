@@ -124,8 +124,22 @@ screen grid_movement():
     $ _bg        = grid_background_displayable(player_grid_row, player_grid_col)
     $ _zone_name = location_name(_area) if _area else "Drum"
     $ _zone_desc = (LOCATIONS.get(_area, {}).get("description", "") if _area else "") or "Un drum prăfuit, fără semne de viață."
+    $ _grid_actor = grid_actor_at(player_grid_row, player_grid_col)
 
     add _bg
+
+    # Actor vizual pe celula curentă — apare peste background, sub UI.
+    if _grid_actor == "batran":
+        add npc_displayable("batran") at actor_batran
+
+    elif _grid_actor == "boier":
+        add npc_displayable("boier") at actor_boier
+
+    elif _grid_actor == "haiduc":
+        add npc_displayable("haiduc") at actor_haiduc
+
+    elif _grid_actor == "lup":
+        add npc_displayable("lup") at actor_lup
 
     # Panou informații locație — stânga sus
     frame:
@@ -330,10 +344,15 @@ label grid_map:
         
         if player_grid_row == 22 and player_grid_col == 7 and not wolf_tutorial_done:
             $ wolf_tutorial_active = True
-            $ wolf_tutorial_done = True
+
+            scene expression grid_background_displayable(player_grid_row, player_grid_col) with dissolve
+            show expression npc_displayable("lup") as npc_lup at actor_lup
 
             "Un mârâit se aude din iarba înaltă."
             "Un lup îți taie calea."
+
+            hide npc_lup
+            $ wolf_tutorial_done = True
 
             call start_combat("lup", "grid_map")
 
