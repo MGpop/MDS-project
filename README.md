@@ -1,256 +1,379 @@
+# IMPORTANT!!!
+
+Secțiunea **Releases** de pe GitHub (în dreapta) conține fișierele necesare pentru folosirea AI-ului.
+
+Fișierele dezarhivate se adăugă în folder-ul principal al jocului. Nu în folder-ul game.
+
+
+
 # Ordinul Dragonului
 
 ## Despre proiect
 
-**Ordinul Dragonului** este un joc narativ realizat în **Ren'Py**, cu elemente de explorare și RPG ușor, plasat în **Țara Românească a anului 1456**. Jucătorul intră în rolul unui agent al Ordinului Dragonului, trimis la **Târgoviște** pentru a investiga o conspirație care îl vizează pe **Vlad Țepeș**.
+**Ordinul Dragonului** este un joc narativ realizat în **Ren'Py**, cu elemente de explorare, combat simplificat, inventar și interacțiuni asistate de AI. Acțiunea este plasată în **Țara Românească a anului 1456**, într-un context istoric-fantastic inspirat de întoarcerea lui **Vlad Țepeș** la tron.
 
-Proiectul urmărește să combine:
-- narațiune istorică și atmosferă medievală;
+Jucătorul pornește dintr-un sat și ajunge treptat către han, pădure, Târgoviște, Curtea Domnească și alte zone importante. Proiectul urmărește să combine:
+
 - explorare pe hartă;
-- progresie prin locații, NPC-uri și quest-uri;
-- alegeri cu impact asupra facțiunilor și a direcției poveștii.
-
-La nivel de concept, jocul include mai multe straturi:
-- **explorare** între locații importante;
-- **interacțiuni narative** cu personaje-cheie;
-- **sisteme de progres** pentru inventar, quest-uri și reputație;
-- **ramificații** bazate pe loialitate, informații descoperite și decizii ale jucătorului.
+- interacțiuni cu NPC-uri;
+- quest-uri principale și secundare;
+- combat tactic simplificat;
+- inventar, arme și recompense;
+- agenți AI locali pentru dialog și decizii adaptive.
 
 ---
 
-## Universul jocului
+## Status curent
 
-Acțiunea pornește în contextul întoarcerii lui Vlad Țepeș la tron. Ordinul Dragonului își trimite agentul în teren cu o misiune aparent clară, însă intriga este construită în jurul ideii că informațiile primite inițial sunt incomplete sau manipulate.
+Proiectul este în stadiu de **prototype / demo jucabil**. Nu este încă feature complete, dar are deja un flow de joc funcțional:
 
-Direcția dorită pentru joc este una de:
-- mister politic;
-- tensiune între facțiuni;
-- conspirații;
-- dezvăluiri treptate;
-- explorare semi-liberă a lumii.
-
----
-
-## Stack și organizare
-
-Proiectul folosește:
-- `Ren'Py 8.5.2`
-- scripturi `.rpy` pentru logică, UI și narațiune;
-- asset-uri UI în `game/gui/`;
-- background-uri și sprite-uri în `game/images/`.
-
-Structura logică principală:
-
-- `game/script.rpy` — flow-ul de start și intro-ul;
-- `game/systems/` — sisteme de gameplay;
-- `game/locations/` — hartă, locații și intrări în zone;
-- `game/characters/` — personaje și definiții vizuale;
-- `game/data/` — iteme, rewards, flags, inamici;
-- `game/quests/` — progres narativ și quest-uri;
-- `game/ai/` — module planificate pentru sisteme adaptive.
+- start în sat;
+- explorare pe hartă;
+- NPC-uri vizibile pe hartă;
+- întâlnire cu bătrânul satului;
+- tutorial cu lupul;
+- han și boier;
+- pădure și haiduc;
+- acces condiționat către Târgoviște;
+- inventar;
+- sistem de arme;
+- consum de merinde pentru vindecare;
+- side-quest demonstrativ cu ghicitorul și AI local.
 
 ---
 
-# Status curent
+## Tehnologii folosite
 
-## Rezumat
-
-În forma actuală, proiectul este un **prototype / pre-alpha** cu:
-- explorare funcțională;
-- bază de UI;
-- sistem minim de combat;
-- fundaluri și prezentare vizuală coerentă;
-- primele interacțiuni dinamice cu inamici.
-
-Fundația tehnică a jocului există deja, iar accentul actual al dezvoltării este pe:
-- integrarea sistemelor;
-- conținut narativ;
-- extinderea combatului;
-- iterarea pe flow-ul general al gameplay-ului.
+- **Ren'Py 8.5.2** pentru joc;
+- scripturi `.rpy` pentru logică, UI, hartă, combat și quest-uri;
+- **Python 3.11 embeddable** pentru serverul AI local;
+- **FastAPI** și **Uvicorn** pentru backend-ul AI;
+- **GPT4All** pentru rularea unui model local `.gguf`;
+- fișiere JSON pentru date AI, precum ghicitori și configurare.
 
 ---
 
-# Ce funcționează acum
+## Structura proiectului
 
-## Intro și flow de bază
+Fișiere importante:
 
-- Intro-ul jocului este funcțional și folosește asset-uri dedicate.
-- Jucătorul își poate introduce numele.
-- Flow-ul dintre intro și gameplay este stabil.
-- Jocul pornește direct către sistemul de explorare.
-
----
-
-## Explorare și hartă
-
-- Există un sistem de explorare pe o **grilă 12×12**.
-- Locațiile principale sunt definite în date.
-- Există conectori și drumuri între regiuni.
-- Background-urile sunt legate la locații reale.
-- Harta afișează fundaluri atât pentru locații, cât și pentru drumurile importante.
-
-Locații implementate parțial:
-- Han;
-- Curtea Domnească;
-- Pădure;
-- Tabăra otomană.
+- `game/systems/map_system.rpy` — navigația pe hartă;
+- `game/locations/location_data.rpy` — grila lumii, zone, culori minimap și background-uri;
+- `game/locations/travel_labels.rpy` — interacțiuni de zonă;
+- `game/systems/combat_system.rpy` — combatul;
+- `game/systems/inventory_system.rpy` — inventarul;
+- `game/systems/health_system.rpy` — consumul de merinde și vindecarea;
+- `game/systems/arms_system.rpy` — arme, echipare și seturi de arme;
+- `game/quests/riddler_quest.rpy` — side-quest-ul cu ghicitorul;
+- `game/ai/ai_client.rpy` — clientul Ren'Py care comunică cu serverul AI;
+- `ai/server.py` — serverul AI local;
+- `ai/data/riddles.json` — ghicitorile folosite de ghicitor.
 
 ---
 
-## Combat (versiune minimă)
+## Gameplay implementat
 
-Proiectul include acum o primă versiune funcțională a sistemului de combat.
+### Hartă și explorare
 
-Implementarea actuală este intenționat minimalistă și servește drept bază pentru dezvoltări ulterioare.
+Jocul folosește o hartă pe grilă de **30×40** celule. Fiecare celulă are un tip vizual și o zonă logică. Navigația se poate face:
 
-### Sistemul actual
+- cu tastele direcționale;
+- cu `W`, `A`, `S`, `D`;
+- cu butoanele de pe ecran;
+- în 8 direcții, inclusiv diagonal.
 
-Combatul funcționează pe baza unor cooldown-uri independente:
-- jucătorul și inamicul acționează separat;
-- fiecare acțiune are delay propriu;
-- damage-ul este aplicat la finalul acțiunii;
-- pararea anulează damage-ul pe durata efectului.
+Sistemul are și un mic delay pentru input diagonal: jocul citește prima tastă, apoi așteaptă foarte scurt o a doua tastă compatibilă pentru a decide dacă mișcarea este diagonală.
 
-### Acțiunile jucătorului
+### Zone importante
 
-Momentan există trei acțiuni:
-- `Parare`
-- `Light blow`
-- `Heavy blow`
+Zonele principale implementate în date sunt:
 
-### Pattern-ul inamicilor
+- `zsat` — satul de început;
+- `zhan` — Hanul Corbului Negru;
+- `zpadure` — Pădurea Vlăsiei;
+- `ztargoviste` — Târgoviște;
+- `zcurte` — Curtea Domnească;
+- `zotomani` — tabăra otomană.
 
-Inamicii folosesc momentan un pattern simplu:
-- `light → parry → heavy`
+Fast travel-ul există ca sistem și folosește variabile separate pentru:
 
-Acesta este temporar și va fi înlocuit ulterior cu:
-- AI contextual;
-- variații de stil de luptă;
-- arme diferite;
-- statistici;
-- comportamente adaptive.
+- zonă deblocată;
+- punct de fast travel deblocat.
 
 ---
 
-## Sănătate și moarte
+## NPC-uri și interacțiuni
+
+NPC-urile importante au sprite-uri afișate direct pe hartă:
+
+- bătrânul satului;
+- boierul de la han;
+- haiducul din pădure;
+- lupul din tutorial;
+- ghicitorul din lanurile de grâu.
+
+NPC-urile pot fi ascunse sau afișate în funcție de progresul jucătorului. De exemplu, boierul dispare după ce este învins, iar lupul nu mai apare după tutorial.
+
+---
+
+## Combat
+
+Combatul este funcțional într-o formă simplificată. Jucătorul are trei acțiuni principale:
+
+- `Parare`;
+- `Light blow`;
+- `Heavy blow`.
 
 Sistemul include:
+
 - HP pentru jucător;
 - HP pentru inamici;
-- blocarea salvării în timpul luptei;
-- game over simplu.
+- cooldown-uri pentru acțiuni;
+- damage aplicat la finalul acțiunii;
+- parare care poate anula damage-ul;
+- game over simplu la moarte;
+- recompense după victorie.
 
-Înainte de luptă:
-- jocul recomandă salvarea.
+Inamici implementați în demo:
 
-La moarte:
-- apare un mesaj de deces;
-- jucătorul este informat că trebuie să revină la o salvare anterioară;
-- următorul ecran trimite către meniul principal.
-
----
-
-## Întâlniri dinamice cu inamici
-
-Există acum primele evenimente dinamice legate de inamici.
-
-Exemplu:
-- în Han există o șansă de 50% ca un soldat otoman să fie prezent;
-- dacă este prezent, există o șansă separată de 50% să înceapă el lupta;
-- dacă nu este agresiv, jucătorul îl poate ignora sau confrunta.
-
-Sistemul este construit pentru extindere către:
-- patrule;
-- ambuscade;
-- reputație între facțiuni;
-- reacții bazate pe progresul narativ.
+- lup;
+- boier;
+- haiduc.
 
 ---
 
-## Prezentare vizuală
+## Inventar, arme și merinde
 
-Combatul afișează:
-- background-ul locației;
-- sprite-ul inamicului;
-- imaginile asociate acțiunilor playerului;
-- UI pentru HP și status.
+Inventarul este funcțional și afișează itemele cu iconițe din `game/images/items/`.
 
-### Sprite-uri pentru inamici
+Item important:
 
-Structura actuală folosește stări separate:
-- `default`
-- `spotted`
-- `fight`
-- `parry`
-- `light`
-- `heavy`
+```text
+merinde
+```
 
-Această organizare permite extinderea ulterioară fără refactorizare majoră.
+Merindele sunt provizii consumabile. Jucătorul începe jocul cu **1 merinde**.
 
----
+Merindele pot fi consumate:
 
-# Ce este implementat doar parțial
+- cu tasta `H`;
+- cu butonul `Merinde xN (H)` din HUD.
 
-- **Fast travel** există ca logică, dar depinde încă de progresul narativ.
-- **Combatul** există într-o formă minimală și necesită extindere.
-- Interacțiunile cu NPC-uri sunt încă limitate.
-- Zonele există vizual, dar nu sunt populate consistent cu conținut.
-- Quest-urile principale și secundare sunt încă în fază de structură.
+Efect:
+
+- vindecă maximum **15 HP**;
+- nu trece peste `player_max_health`;
+- nu se consumă dacă jucătorul are deja HP maxim;
+- afișează mesaj dacă jucătorul nu are merinde.
+
+Sistemul de arme include seturi de arme, echipare și sincronizare cu statistici de combat.
 
 ---
 
-# Ce nu este încă implementat
+## Side-quest: Ghicitorul
 
-Următoarele sisteme există doar ca structură sau placeholder:
+Ghicitorul este primul side-quest demonstrativ cu AI.
 
-- `game/quests/main_quest.rpy`
-- `game/quests/side_quests.rpy`
-- `game/quests/quest_data.rpy`
-- `game/systems/inventory_system.rpy`
-- `game/systems/npc_system.rpy`
-- `game/systems/quest_system.rpy`
-- `game/ai/environment_director.rpy`
-- `game/ai/combat_adaptation.rpy`
-- `game/ai/reward_evaluator.rpy`
+Fișiere relevante:
+
+```text
+game/quests/riddler_quest.rpy
+ai/data/riddles.json
+game/images/enemies/npc_friendly/ghicitorul.png
+```
+
+Mecanica actuală:
+
+- ghicitorul poate apărea pe celule de tip `G`, adică lanuri de grâu;
+- prima întâlnire are o șansă mai mare de spawn;
+- întâlnirile următoare au o șansă mai mică;
+- după interacțiune, ghicitorul dispare;
+- după dispariție, intră într-un cooldown real de 5 minute;
+- ghicitorul pune o ghicitoare în engleză;
+- jucătorul scrie răspunsul;
+- AI-ul local sau fallback-ul verifică răspunsul;
+- dacă răspunsul este corect, jucătorul primește `+1 merinde`.
+
+Valorile de spawn pot fi ajustate în:
+
+```text
+game/quests/riddler_quest.rpy
+```
+
+```renpy
+RIDDLER_FIRST_SPAWN_CHANCE = 0.10
+RIDDLER_REPEAT_SPAWN_CHANCE = 0.03
+RIDDLER_COOLDOWN_SECONDS = 5 * 60
+```
+
+Pentru testare rapidă, se poate forța apariția ghicitorului din consola Ren'Py:
+
+```renpy
+riddler_debug_force_spawn_here()
+```
 
 ---
 
-# Asset-uri și direcție vizuală
+## Integrarea AI
 
-Proiectul folosește:
-- UI custom în `game/gui/`;
-- background-uri dedicate;
-- sprite-uri pentru inamici;
-- icon-uri pentru combat.
+Proiectul are un server AI local în:
 
-Prezentarea vizuală a depășit etapa de placeholder și începe să funcționeze ca un demo jucabil coerent.
+```text
+ai/server.py
+```
+
+Ren'Py comunică cu serverul prin:
+
+```text
+game/ai/ai_client.rpy
+```
+
+Funcții Ren'Py importante:
+
+```renpy
+ai_dialogue(...)
+ai_get_riddle()
+ai_evaluate_riddle(...)
+ai_environment_event(...)
+ai_ensure_server_running()
+```
+
+Serverul AI oferă endpoint-uri precum:
+
+```text
+GET  /health
+POST /dialogue
+GET  /riddle/random
+POST /riddle/evaluate
+POST /environment/update
+GET  /environment/state
+```
+
+Jocul încearcă să pornească automat serverul AI dacă nu este deja pornit, folosind Python-ul local din:
+
+```text
+runtime/python311/python.exe
+```
+
+### Modelul AI local
+
+Modelul `.gguf` nu este inclus în repository, deoarece poate fi foarte mare. Fișierele de model sunt ignorate prin `.gitignore`:
+
+```text
+/ai/models/*.gguf
+```
+
+Pentru rulare locală, este nevoie de un fișier:
+
+```text
+ai/config.json
+```
+
+Exemplu de configurare:
+
+```json
+{
+  "model_backend": "gpt4all",
+  "model_path": "ai/models/model.gguf",
+  "server_host": "127.0.0.1",
+  "server_port": 8765,
+  "ai_dialogue_enabled": true,
+  "riddle_evaluator_enabled": true,
+  "max_tokens": 140,
+  "temperature": 0.7
+}
+```
+
+`model_path` trebuie modificat ca să corespundă exact numelui modelului local.
+
+Dacă modelul nu există sau serverul AI nu poate genera un răspuns, jocul folosește fallback-uri hardcodate, astfel încât demo-ul să rămână jucabil.
 
 ---
 
-# Direcție de dezvoltare
+## Instalare și rulare pentru dezvoltare
 
-Pașii următori vizați:
+### 1. Clonarea proiectului
+
+```bash
+git clone <repo-url>
+cd MDS
+```
+
+### 2. Pregătirea Python-ului local pentru AI
+
+Proiectul folosește un Python portabil în:
+
+```text
+runtime/python311/
+```
+
+Instalează dependințele AI cu:
+
+```bash
+runtime\python311\python.exe ai\install_ai_deps.py
+```
+
+Dacă fișierul de instalare nu este prezent local, dependințele din `ai/requirements.txt` pot fi instalate manual cu pip în Python-ul portabil.
+
+### 3. Configurarea modelului local
+
+Copiază modelul `.gguf` în:
+
+```text
+ai/models/
+```
+
+Apoi creează sau actualizează:
+
+```text
+ai/config.json
+```
+
+cu path-ul corect către model.
+
+### 4. Pornirea jocului
+
+Jocul se pornește din Ren'Py Launcher sau din executabilul local al proiectului.
+
+Serverul AI poate fi pornit automat de joc. Pentru testare manuală:
+
+```bash
+runtime\python311\python.exe ai\server.py
+```
+
+Test health:
+
+```text
+http://127.0.0.1:8765/health
+```
+
+---
+
+## Ce este implementat parțial
+
+- sistemul principal de quest-uri;
+- progresia narativă completă;
+- reputația pe facțiuni;
+- agenții AI pentru combat și reward-uri adaptive;
+- conținutul final pentru oraș, curte și tabăra otomană;
+- distribuția finală cu launcher și model AI.
+
+---
+
+## Direcție de dezvoltare
+
+Pașii următori probabili:
+
+- rafinarea side-quest-ului cu ghicitorul;
+- adăugarea quest-ului cu soldatul de la fântână și cupa de aur;
+- conectarea Environment Director Agent la mai multe alegeri;
 - extinderea sistemului de combat;
-- integrarea quest-urilor reale;
-- dezvoltarea NPC-urilor;
-- reputație și facțiuni;
-- evenimente dinamice;
-- progresie narativă ramificată;
-- inventar și rewards reale;
-- polish vizual și audio.
+- integrarea reward evaluator-ului;
+- pregătirea unui launcher care pornește jocul și AI-ul împreună;
+- polish vizual și narativ.
 
 ---
 
-# Concluzie
+## Concluzie
 
-În forma actuală, proiectul nu este încă „feature complete”, însă are:
-- o bază tehnică stabilă;
-- identitate vizuală clară;
-- flow minim jucabil;
-- fundație bună pentru extindere rapidă.
-
-Accentul dezvoltării a trecut de la construirea structurii către:
-- integrarea sistemelor;
-- conținut;
-- gameplay;
-- iterație narativă.
+În forma actuală, **Ordinul Dragonului** are o bază tehnică solidă pentru un demo: explorare, NPC-uri, combat, inventar, vindecare, arme și un prim side-quest AI funcțional. Proiectul nu este încă finalizat, dar poate demonstra deja direcția de gameplay și integrarea agenților AI locali.
