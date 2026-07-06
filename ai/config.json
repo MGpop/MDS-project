@@ -1,0 +1,10 @@
+{
+  "model_backend": "gpt4all",
+  "model_path": "ai/models/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "server_host": "127.0.0.1",
+  "server_port": 8765,
+  "ai_dialogue_enabled": true,
+  "environment_director_enabled": true,
+  "combat_adaptation_enabled": true,
+  "reward_evaluator_enabled": true
+}

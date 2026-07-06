@@ -1,0 +1,47 @@
+Phi-2 GGUF
+TinyLlama Chat GGUF
+Qwen 2.5 0.5B Instruct GGUF
+Qwen 2.5 1.5B Instruct GGUF
+
+
+
+
+Proiectul folosește un agent conversațional generativ local, bazat pe un model open-source în format GGUF, rulat prin GPT4All, și un agent decizional adaptiv care modifică mediul de joc pe baza acțiunilor jucătorului.
+
+
+
+
+1. Descarci modelul GGUF și îl pui în ai/models/
+2. Facem ai/config.json
+3. Facem ai/server.py minimal
+
+4. Facem dialogue_agent.py cu GPT4All
+5. Testăm /dialogue din browser sau terminal
+6. Facem environment_agent.py
+7. Testăm /environment/update
+8. Facem game/ai/ai_client.rpy
+9. Conectăm Ren'Py la server
+10. Implementăm ghicitorul ca prim NPC AI
+11. Implementăm quest-ul cu fântâna
+12. Adăugăm combat_agent.py
+13. Adăugăm reward_agent.py
+
+
+
+1. Agent conversațional generativ
+   - model GGUF local
+   - GPT4All
+   - generează dialog pentru NPC-uri secundare
+
+2. Agent Environment Director
+   - observă acțiunile jucătorului
+   - menține scoruri interne
+   - modifică reacțiile NPC-urilor și spawn-urile
+
+3. Agent Combat Adaptation
+   - detectează pattern-uri în luptă
+   - schimbă strategia inamicilor
+
+4. Agent Reward Evaluator
+   - evaluează dificultatea reală a luptei
+   - ajustează recompensele

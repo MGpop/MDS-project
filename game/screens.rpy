@@ -250,8 +250,8 @@ screen quick_menu():
             textbutton _("History") action ShowMenu('history')
             textbutton _("Skip") action Skip() alternate Skip(fast=True, confirm=True)
             textbutton _("Auto") action Preference("auto-forward", "toggle")
-            textbutton _("Save") action ShowMenu('save')
-            textbutton _("Q.Save") action QuickSave()
+            textbutton _("Save") sensitive not in_combat action ShowMenu('save')
+            textbutton _("Q.Save") sensitive not in_combat action QuickSave()
             textbutton _("Q.Load") action QuickLoad()
             textbutton _("Prefs") action ShowMenu('preferences')
 
@@ -306,9 +306,15 @@ screen navigation():
 
         else:
 
-            textbutton _("History") action ShowMenu("history")
+            textbutton _("History"):
+                style "main_menu_nav_button"
+                text_style "main_menu_nav_button_text"
+                action ShowMenu("history")
 
-            textbutton _("Save") action ShowMenu("save")
+            textbutton _("Save"):
+                style "main_menu_nav_button"
+                text_style "main_menu_nav_button_text"
+                sensitive not in_combat action ShowMenu("save")
 
         textbutton _("Load"):
             style "main_menu_nav_button"
@@ -326,7 +332,10 @@ screen navigation():
 
         elif not main_menu:
 
-            textbutton _("Main Menu") action MainMenu()
+            textbutton _("Main Menu"):
+                style "main_menu_nav_button"
+                text_style "main_menu_nav_button_text"
+                action MainMenu()
 
         textbutton _("About"):
             style "main_menu_nav_button"
@@ -641,7 +650,16 @@ screen save():
 
     tag menu
 
-    use file_slots(_("Save"))
+    if in_combat:
+        use game_menu(_("Save")):
+            vbox:
+                xalign 0.5
+                yalign 0.5
+                spacing 20
+                text _("Nu poți salva în timpul luptei.")
+                textbutton _("Înapoi") action Return()
+    else:
+        use file_slots(_("Save"))
 
 
 screen load():
@@ -689,7 +707,7 @@ screen file_slots(title):
                     $ slot = i + 1
 
                     button:
-                        action FileAction(slot)
+                        action If(title == _("Save") and in_combat, NullAction(), FileAction(slot))
 
                         has vbox
 
