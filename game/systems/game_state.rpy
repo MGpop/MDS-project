@@ -70,6 +70,15 @@ default haiduc_cufar_accused = False
 default haiduc_cufar_fight_done = False
 default haiduc_cufar_defeated = False
 
+# side quest: ghicitorul
+default riddler_active = False
+default riddler_row = -1
+default riddler_col = -1
+default riddler_first_encounter_done = False
+default riddler_cooldown_until = 0.0
+default riddler_current_riddle = None
+default riddler_last_result = None
+
 # default loyalty_vlad = 0
 # default loyalty_boyars = 0
 # default loyalty_ottomans = 0
@@ -174,5 +183,14 @@ label init_game_state:
     $ haiduc_cufar_accused = False
     $ haiduc_cufar_fight_done = False
     $ haiduc_cufar_defeated = False
+
+    # side quest: ghicitorul
+    $ riddler_active = False
+    $ riddler_row = -1
+    $ riddler_col = -1
+    $ riddler_first_encounter_done = False
+    $ riddler_cooldown_until = 0.0
+    $ riddler_current_riddle = None
+    $ riddler_last_result = None
 
     return

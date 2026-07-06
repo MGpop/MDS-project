@@ -17,6 +17,8 @@ define soldat_roman = Character("Soldatul român", color="#7a8a55")
 
 define haiduc = Character("Haiducul", color="#5f8a4a")
 
+define ghicitor = Character("Ghicitorul", color="#b68cff")
+
 
 
 define vlad = Character("Vlad Țepeș", color="#cc2200")
@@ -30,7 +32,6 @@ define kemal = Character("Kemal Pașa", color="#1a6b3c")
 define calin = Character("Călin — Maestrul Ordinului", color="#4a4a8a")
 
 define voce_necunoscuta = Character("???", color="#555555")
-
 
 
 

@@ -15,6 +15,9 @@ init python:
             "images/lup/lup_default.png",
             "images/enemies/lup/lup_default.png",
         ],
+        "ghicitor": [
+            "images/enemies/npc_friendly/ghicitorul.png",
+        ],
     }
 
     NPC_IMAGE_KEYWORDS = {
@@ -22,6 +25,7 @@ init python:
         "boier": ["boier"],
         "haiduc": ["haiduc"],
         "lup": ["lup"],
+        "ghicitor": ["ghicitorul", "ghicitor"],
     }
 
     GRID_ACTOR_CELLS = {
@@ -93,9 +97,21 @@ init python:
         if actor_id == "lup":
             return not bool(getattr(store, "wolf_tutorial_done", False))
 
+        if actor_id == "ghicitor":
+            try:
+                return riddler_is_here()
+            except Exception:
+                return False
+
         return True
 
     def grid_actor_at(row, col):
+        try:
+            if riddler_is_here(row, col):
+                return "ghicitor"
+        except Exception:
+            pass
+
         actor_id = GRID_ACTOR_CELLS.get((row, col))
 
         if not actor_id:
@@ -136,3 +152,8 @@ transform actor_lup:
     xalign 0.55
     yalign 0.75
     zoom 0.48
+
+transform actor_ghicitor:
+    xalign 0.5
+    yalign 1.0
+    zoom 1.0

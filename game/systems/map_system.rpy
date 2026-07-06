@@ -144,6 +144,9 @@ screen grid_movement():
     elif _grid_actor == "lup":
         add npc_displayable("lup") at actor_lup
 
+    elif _grid_actor == "ghicitor":
+        add npc_displayable("ghicitor") at actor_ghicitor
+
     # Panou informații locație — stânga sus
     frame:
         xpos 20
@@ -318,13 +321,16 @@ label grid_map:
         jump grid_map
 
     if _dir == "interact":
-        $ _z = get_zone_at(player_grid_row, player_grid_col)
-        if _z == "zcurte" and renpy.has_label("zone_actions_zcurte_open"):
-            call zone_actions_zcurte_open
-        elif _z and renpy.has_label("zone_actions_" + _z):
-            call expression "zone_actions_" + _z
+        if renpy.has_label("zone_actions_riddler") and riddler_is_here():
+            call zone_actions_riddler
         else:
-            "Nu ai ce face acum. Continuă să explorezi."
+            $ _z = get_zone_at(player_grid_row, player_grid_col)
+            if _z == "zcurte" and renpy.has_label("zone_actions_zcurte_open"):
+                call zone_actions_zcurte_open
+            elif _z and renpy.has_label("zone_actions_" + _z):
+                call expression "zone_actions_" + _z
+            else:
+                "Nu ai ce face acum. Continuă să explorezi."
         jump grid_map
 
     if _dir and _dir.startswith("key_"):
@@ -378,6 +384,8 @@ label grid_map:
             $ unlock_fast_travel(_next_zone)
             if renpy.has_label("enter_" + _next_zone):
                 call expression "enter_" + _next_zone
+
+        $ riddler_try_spawn_on_current_cell()
 
     jump grid_map
 

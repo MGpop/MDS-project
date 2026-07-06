@@ -53,7 +53,7 @@ init python:
 
         "merinde": {
             "name":        "Merinde",
-            "description": "Provizii. Foloseștele pentru a te vindeca.",
+            "description": "Provizii simple. Folosește-le pentru a-ți reface până la 15 puncte de sănătate.",
             "type":        "health",
             "stackable":   True,
         },
