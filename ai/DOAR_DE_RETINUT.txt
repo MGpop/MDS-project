@@ -19,8 +19,10 @@ Proiectul folosește un agent conversațional generativ local, bazat pe un model
 5. Testăm /dialogue din browser sau terminal
 6. Facem environment_agent.py
 7. Testăm /environment/update
+
 8. Facem game/ai/ai_client.rpy
 9. Conectăm Ren'Py la server
+
 10. Implementăm ghicitorul ca prim NPC AI
 11. Implementăm quest-ul cu fântâna
 12. Adăugăm combat_agent.py

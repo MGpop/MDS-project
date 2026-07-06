@@ -41,7 +41,8 @@ init python:
     }
 
     def player_has_city_seal():
-        return bool(store.got_city_seal or store.inventory.get("pecete_targoviste", 0) > 0)
+        inventory = getattr(store, "inventory", {})
+        return bool(getattr(store, "got_city_seal", False) or inventory.get("pecete_targoviste", 0) > 0)
 
     def is_city_entry_attempt(source, target):
         return CITY_ENTRY_PAIRS.get(source) == target
@@ -125,6 +126,8 @@ screen grid_movement():
     $ _zone_name = location_name(_area) if _area else "Drum"
     $ _zone_desc = (LOCATIONS.get(_area, {}).get("description", "") if _area else "") or "Un drum prăfuit, fără semne de viață."
     $ _grid_actor = grid_actor_at(player_grid_row, player_grid_col)
+    $ _health_text = "HP: %s/%s" % (player_health, player_max_health)
+    $ _merinde_count = merinde_count()
 
     add _bg
 
@@ -160,6 +163,14 @@ screen grid_movement():
         xpos 20
         ypos 148
         spacing 8
+
+        text _health_text:
+            yalign 0.5
+            style "hud_status_text"
+
+        textbutton ("Merinde x%s (H)" % _merinde_count):
+            action Return("use_merinde")
+            style "hud_btn"
 
         textbutton "Inventar (I)":
             action Return("open_inventory")
@@ -265,6 +276,7 @@ screen grid_movement():
     key "K_m"        action Return("open_map")
     key "K_i"        action Return("open_inventory")
     key "K_p"        action Return("open_arms")
+    key "K_h"        action Return("use_merinde")
 
 
 screen grid_second_direction(first_dir):
@@ -299,6 +311,10 @@ label grid_map:
 
     if _dir == "open_arms":
         call open_arms
+        jump grid_map
+
+    if _dir == "use_merinde":
+        call use_merinde_from_map
         jump grid_map
 
     if _dir == "interact":
@@ -409,6 +425,11 @@ style hud_btn:
 style hud_btn_text:
     color "#E8D5A3"
     hover_color "#FFD700"
+    size 18
+    outlines [(1, "#000000", 1, 1)]
+
+style hud_status_text:
+    color "#E8D5A3"
     size 18
     outlines [(1, "#000000", 1, 1)]
 

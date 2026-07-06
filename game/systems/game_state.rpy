@@ -28,7 +28,13 @@ default unlocked_fast = {
 
 default active_quests = []
 default completed_quests = []
-default inventory = {}
+default inventory = {"merinde": 1}
+default owned_arms = []
+default equipped_arms = {
+    "dagger": None,
+    "sword": None,
+    "shield": None,
+}
 default player_level = 1
 default current_chapter = 1
 
@@ -92,9 +98,6 @@ default haiduc_cufar_defeated = False
 
 
 
-
-
-
 label init_game_state:
     $ player_location = "zsat"
     $ player_grid_row = 29
@@ -121,7 +124,13 @@ label init_game_state:
     $ unlocked_locations = ["zsat"]
     $ active_quests = []
     $ completed_quests = []
-    $ inventory = {}
+    $ inventory = {"merinde": 1}
+    $ owned_arms = []
+    $ equipped_arms = {
+        "dagger": None,
+        "sword": None,
+        "shield": None,
+    }
     $ player_level = 1
     $ current_chapter = 1
     $ player_max_health = 100
