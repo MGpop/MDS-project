@@ -21,6 +21,15 @@ define calin = Character("Călin — Maestrul Ordinului", color="#4a4a8a")
 
 define voce_necunoscuta = Character("???", color="#555555")
 
+# Cine vorbește, pentru agentul de dialog liber (ai/dialogue_agent.rpy).
+define NPC_CHARACTERS = {
+    "calin_ordin":  calin,
+    "mircea_boier": mircea,
+    "radu_boier":   radu,
+    "vlad_tepes":   vlad,
+    "kemal_otoman": kemal,
+}
+
 
 
 
@@ -37,7 +46,7 @@ image otoman_parry = "images/enemies/otoman/otoman_parry.png"
 image otoman_light = "images/enemies/otoman/otoman_light.png"
 image otoman_heavy = "images/enemies/otoman/otoman_heavy.png"
 
-image bg han = im.Scale("images/backgrounds/han.png", config.screen_width, config.screen_height)
+image bg han = Transform("images/backgrounds/han.png", xysize=(config.screen_width, config.screen_height), fit="cover", xalign=0.5, yalign=0.5)
 
 transform enemy_idle_pos:
     xalign 0.75

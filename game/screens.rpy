@@ -826,6 +826,20 @@ screen preferences():
                     textbutton _("After Choices") action Preference("after choices", "toggle")
                     textbutton _("Transitions") action InvertSelected(Preference("transitions", "toggle"))
 
+                ## Agenții AI: model de limbaj mic, rulat local. Oprirea lor lasă
+                ## jocul pe textele scrise de mână — util dacă laptopul e lent.
+                vbox:
+                    style_prefix "check"
+                    label _("Agenți AI")
+                    textbutton _("Activează agenții") action Function(ai_toggle_enabled) selected persistent.ai_enabled
+
+                vbox:
+                    style_prefix "radio"
+                    label _("Model local")
+                    for _ai_model in MODELE_SUGERATE:
+                        textbutton _ai_model action Function(ai_set_model, _ai_model) selected (persistent.ai_model == _ai_model)
+                    text ai_status_text() style "ai_pref_status"
+
                 ## Additional vboxes of type "radio_pref" or "check_pref" can be
                 ## added here, to add additional creator-defined preferences.
 
@@ -1689,3 +1703,9 @@ style slider_vbox:
 style slider_slider:
     variant "small"
     xsize 900
+
+
+style ai_pref_status:
+    size 16
+    color "#A08050"
+    xmaximum 320

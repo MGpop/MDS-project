@@ -44,3 +44,10 @@ init python:
             npc_id for npc_id, data in NPC_REGISTRY.items()
             if data["location"] == location_id and npc_available(npc_id)
         ]
+
+init -5 python:
+    # Personele și maparea facțiune -> loialitate stau în Python pur
+    # (game/python-packages/dragon_ai/personas.py), ca jocul, testele și evals
+    # să lucreze pe exact aceleași date.
+    from dragon_ai.personas import NPC_PERSONAS, FACTIUNE_LOIALITATE
+    from dragon_ai.personas import get as npc_persona
