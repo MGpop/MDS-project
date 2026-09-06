@@ -36,3 +36,10 @@ Thumbs.db
 # VS Code — ignoră setări personale, dar păstrează settings.json comun
 .vscode/*
 !.vscode/settings.json
+
+# Biblioteci de dezvoltare instalate local (pytest etc.)
+/.devlibs
+/.venv
+# Loguri agenți AI
+/logs
+

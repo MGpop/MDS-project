@@ -1,0 +1,76 @@
+{
+  "descriere": "Cazuri pentru Cronicar: aceeași zonă, stări diferite. Verificăm dacă agentul alege evenimentul potrivit stării, nu la întâmplare.",
+  "cazuri": [
+    {
+      "id": "suspiciune_mare_in_han",
+      "descriere": "Ordinul îl suspectează puternic — ar trebui să simtă că e urmărit.",
+      "stare": {
+        "zona": "han", "zona_nume": "Hanul Corbului Negru", "capitol": 2,
+        "loialitati": {"Vlad": 0, "boieri": 0, "otomani": 0, "Ordin": -1},
+        "suspiciune": 4, "obiecte": ["Scrisoare secretă"]
+      },
+      "asteptat": ["order_watch"]
+    },
+    {
+      "id": "aliat_al_otomanilor_in_tabara",
+      "descriere": "Loialitate otomană mare, în tabăra otomană.",
+      "stare": {
+        "zona": "tabara_otomana", "zona_nume": "Tabăra otomană", "capitol": 3,
+        "loialitati": {"Vlad": -2, "boieri": 0, "otomani": 4, "Ordin": 0},
+        "suspiciune": 1, "obiecte": []
+      },
+      "asteptat": ["ottoman_patrol", "ambient"]
+    },
+    {
+      "id": "omul_lui_vlad_la_curte",
+      "descriere": "Favorit al lui Vlad, la Curtea Domnească.",
+      "stare": {
+        "zona": "curtea_domneasca", "zona_nume": "Curtea Domnească", "capitol": 3,
+        "loialitati": {"Vlad": 4, "boieri": -2, "otomani": 0, "Ordin": 1},
+        "suspiciune": 0, "obiecte": ["Sigiliu al Ordinului"]
+      },
+      "asteptat": ["vlad_salute", "ambient"]
+    },
+    {
+      "id": "aliat_al_boierilor_in_targoviste",
+      "descriere": "Boierii îl consideră prieten.",
+      "stare": {
+        "zona": "targoviste", "zona_nume": "Târgoviște", "capitol": 2,
+        "loialitati": {"Vlad": -1, "boieri": 3, "otomani": 0, "Ordin": 0},
+        "suspiciune": 0, "obiecte": []
+      },
+      "asteptat": ["boyar_whisper", "informator", "ambient"]
+    },
+    {
+      "id": "stare_complet_neutra",
+      "descriere": "Nimic nu iese în evidență — agentul ar trebui să tacă sau să dea atmosferă.",
+      "stare": {
+        "zona": "targoviste", "zona_nume": "Târgoviște", "capitol": 1,
+        "loialitati": {"Vlad": 0, "boieri": 0, "otomani": 0, "Ordin": 0},
+        "suspiciune": 0, "obiecte": ["Pumnal"]
+      },
+      "asteptat": ["nimic", "ambient", "informator"]
+    },
+    {
+      "id": "padure_periculoasa",
+      "descriere": "Zonă ferită, jucător în putere: ambuscada e permisă aici.",
+      "stare": {
+        "zona": "padure", "zona_nume": "Pădurea Vlăsiei", "capitol": 3,
+        "loialitati": {"Vlad": 1, "boieri": -2, "otomani": 0, "Ordin": 0},
+        "suspiciune": 2, "obiecte": ["Pumnal"]
+      },
+      "asteptat": ["ambuscada", "order_watch", "ambient", "nimic"]
+    },
+    {
+      "id": "zona_sigura_fara_ambuscada",
+      "descriere": "Curtea Domnească: ambuscada NU e permisă. Dacă o alege, validarea trebuie s-o respingă.",
+      "stare": {
+        "zona": "curtea_domneasca", "zona_nume": "Curtea Domnească", "capitol": 4,
+        "loialitati": {"Vlad": 0, "boieri": 0, "otomani": 2, "Ordin": 0},
+        "suspiciune": 3, "obiecte": []
+      },
+      "asteptat": ["order_watch", "ottoman_patrol", "ambient", "nimic"],
+      "interzis_eveniment": ["ambuscada"]
+    }
+  ]
+}

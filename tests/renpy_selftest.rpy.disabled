@@ -1,0 +1,71 @@
+# Smoke test pentru agenții AI, rulat ÎN interiorul Ren'Py.
+#
+# Testele din tests/*.py verifică logica cu un model fals. Ăsta verifică altceva:
+# că traseul real din joc — fir de execuție separat + ecranul de așteptare +
+# citirea rezultatului — chiar funcționează. Exact aici a fost un bug care bloca
+# jocul la infinit pe „se gândește": sub un ecran `modal True`, `pause` nu se mai
+# termină niciodată.
+#
+# Cum se rulează:
+#   cp tests/renpy_selftest.rpy.disabled game/zz_selftest.rpy
+#   /cale/catre/renpy-8.5.2-sdk/renpy.sh . 2>&1 | grep SELFTEST
+#   rm game/zz_selftest.rpy
+#
+# Se leagă de splashscreen pentru că altfel jocul s-ar opri la meniul principal
+# și testul nici n-ar porni.
+
+init 999 python:
+    # splashscreen ruleaza inainte de meniul principal, deci testul chiar porneste
+    config.label_overrides["splashscreen"] = "_ai_selftest"
+
+init python:
+    import sys as _st_sys
+    def _st(msg):
+        print(u"[SELFTEST] " + msg, file=_st_sys.stderr)
+
+label _ai_selftest:
+    $ _st("pornit; model disponibil = %s" % ai_runtime.is_available())
+
+    # --- Cronicarul: exact apelul din environment_director_on_enter ---
+    $ order_suspicion = 4
+    $ _st("--- cronicar: pornesc apelul pentru zona han")
+    python:
+        _chr_zone = "han"
+        _chr_state = ai_chronicler_state(_chr_zone)
+        _chr_box = ai_runtime.run_async(
+            ai_runtime.chronicler().pick_event,
+            _chr_state, renpy.random.randint(0, 99), list(ai_recent_events), ai_player_can_fight(),
+        )
+    call ai_wait_screen(_chr_box, AI_CHRONICLER_WAIT, u"Cronicarul cantareste locul")
+    python:
+        _r = _chr_box.get("value")
+        if _r is None:
+            _st("cronicar ESUAT: done=%s eroare=%s" % (_chr_box.get("done"), _chr_box.get("error")))
+        else:
+            _st("cronicar OK -> sursa=%s eveniment=%s" % (_r.get("sursa"), _r.get("eveniment")))
+            _st("   text: %s" % _r.get("text", u"")[:110])
+
+    # --- Dialogul: exact apelul din npc_free_talk ---
+    $ _st("--- dialog: pornesc apelul catre Mircea")
+    python:
+        _talk_npc = "mircea_boier"
+        _talk_persona = npc_persona(_talk_npc)
+        _talk_box = ai_runtime.run_async(
+            ai_runtime.dialogue().respond,
+            _talk_persona,
+            ai_dialog_state(_talk_npc),
+            u"Nu sunt omul lui Vlad. Am si eu de pierdut daca el ramane pe tron.",
+            [],
+            ai_dialog_allowed_effects(_talk_npc, False, False),
+        )
+    call ai_wait_screen(_talk_box, AI_DIALOG_WAIT, _talk_persona["nume"] + u" se gandeste")
+    python:
+        _d = _talk_box.get("value")
+        if _d is None:
+            _st("dialog ESUAT: done=%s eroare=%s" % (_talk_box.get("done"), _talk_box.get("error")))
+        else:
+            _st("dialog OK -> sursa=%s efect=%s" % (_d.get("sursa"), _d.get("efect")))
+            _st("   replica: %s" % _d.get("replica", u"")[:130])
+
+    $ _st("=== SELFTEST TERMINAT ===")
+    $ renpy.quit()
