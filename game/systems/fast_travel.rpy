@@ -17,17 +17,21 @@ label fast_travel_menu:
     "Unde vrei să mergi?"
 
     $ _menu_items = [(location_name(d), d) for d in _options]
-    $ _menu_items.append(("Anulează", None))
+    # Valoarea nu are voie să fie None: renpy.display_menu ar afișa intrarea ca
+    # titlu, nu ca buton apăsabil.
+    $ _menu_items.append(("Anulează", "__anuleaza__"))
 
     $ _choice = renpy.display_menu(_menu_items, screen="choice")
 
-    if _choice is None:
+    if _choice == "__anuleaza__" or _choice is None:
         return
 
     "[player_name] se deplasează rapid spre [location_name(_choice)]."
     $ player_location = _choice
+    $ last_entered_zone = _choice
     $ _pos = ZONE_START_POS.get(_choice, (0, 0))
     $ player_grid_row = _pos[0]
     $ player_grid_col = _pos[1]
     call expression "enter_" + _choice
-    jump grid_map
+    call environment_director_on_enter(_choice)
+    return

@@ -7,6 +7,7 @@ default active_quests = []
 default completed_quests = []
 default inventory = {}
 default player_level = 1
+default player_xp = 0
 default current_chapter = 1
 
 default player_max_health = 100
@@ -28,6 +29,13 @@ default vlad_knows_player = False
 default boyars_trust_player = False
 default ottoman_contact_made = False
 
+# Evenimente de zonă deja consumate (ca să nu se repete la fiecare vizită).
+default zone_event_done = []
+
+# Ultima zonă în care a intrat jucătorul. Ține enter_<zonă> să nu se re-declanșeze
+# când ieși un pas pe drum și te întorci.
+default last_entered_zone = "targoviste"
+
 label init_game_state:
     $ player_location = "targoviste"
     $ player_grid_row = 2
@@ -37,6 +45,7 @@ label init_game_state:
     $ completed_quests = []
     $ inventory = {}
     $ player_level = 1
+    $ player_xp = 0
     $ current_chapter = 1
     $ player_max_health = 100
     $ player_health = player_max_health
@@ -54,4 +63,6 @@ label init_game_state:
     $ vlad_knows_player = False
     $ boyars_trust_player = False
     $ ottoman_contact_made = False
+    $ zone_event_done = []
+    $ last_entered_zone = "targoviste"
     return

@@ -57,7 +57,7 @@ label zone_actions_targoviste:
         calin "Bine că ai ajuns, [player_name]. Ordinul te-a trimis la momentul potrivit."
         calin "Se vorbește că boierii din han uneltesc ceva — o alianță secretă cu otomanii. Poate mai mult."
         calin "Du-te la Hanul Corbului Negru. Ascultă. Caută. Dacă găsești dovezi, adu-mi-le."
-        $ active_quests.append("q01_investigatie")
+        $ start_quest("q01_investigatie")
         $ add_item("pumnal")
         "Călin îți întinde un pumnal cu lama înnegrită."
         narrator "Ai primit: {b}Pumnal{/b}. Misiune activă: {i}Investighează Hanul{/i}."
@@ -79,10 +79,14 @@ label zone_actions_targoviste:
                 calin "Înțeleg. Ai grijă cu ea — și cu tine."
                 narrator "Ai păstrat scrisoarea. Poate fi mai utilă direct la Curtea Domnească."
 
-        $ completed_quests.append("q01_investigatie")
-        $ active_quests.remove("q01_investigatie")
+        $ complete_quest("q01_investigatie")
+        "[last_reward_message]"
+        $ current_chapter = 2
+        $ unlock_location("curtea_domneasca")
+        $ unlock_location("padure")
         narrator "— Capitolul I: Investigația — {b}Completat{/b} —"
-        narrator "Aceasta este versiunea demo. Povestea continuă în capitolele următoare..."
+        narrator "Noi drumuri s-au deschis: {b}Curtea Domnească{/b} și {b}Pădurea Vlăsiei{/b}. Explorează-le (Fast-travel: tasta T)."
+        narrator "Când ești gata, deschide {b}Jurnalul (J){/b} și alege «Vezi finalul (demo)»."
 
     elif "q01_investigatie" in active_quests:
         calin "Încă nu ai fost la Han? Nu avem timp de pierdut, [player_name]."
@@ -97,7 +101,18 @@ label zone_actions_han:
     scene bg han with dissolve
 
     if "q01_investigatie" in active_quests and not has_item("scrisoare_secreta"):
-        "Scanezi hanul cu privirea. Prea mulți oameni, prea puține conversații."
+        "Hanul Corbului Negru. Fum, vin acru și prea multe priviri care te ocolesc."
+
+        menu:
+            "Cum procedezi?"
+            "Asculți discret conversațiile de la mese":
+                "Te așezi într-un colț și lași urechea să lucreze."
+                "Doi negustori șoptesc despre «o întâlnire la miezul nopții» și despre «omul sultanului»."
+                $ dragon_order_trust += 1
+                narrator "Indiciu prins. Ordinul va aprecia atenția ta la detalii."
+            "Cauți direct, fără să pierzi timpul":
+                "Treci hotărât printre mese, cu ochii pe orice nu se potrivește."
+
         "Sub o masă, ascuns în grabă, găsești un teanc de hârtii legate cu o panglică roșie."
         "Le desfaci rapid. O scrisoare codificată — cu sigiliul unui boier."
         $ add_item("scrisoare_secreta")
@@ -117,6 +132,13 @@ label zone_actions_han:
                 mircea "Atunci știi că e mai înțelept să taci. Suntem pe aceeași parte, dacă ești deștept."
                 narrator "Mircea Bălan pare să te considere un potențial aliat."
 
+            "Pui mâna pe pumnal. Scrisoarea pleacă cu mine.":
+                mircea "Greșeală. Gardă!"
+                "Un om al lui Mircea se ridică de la masă și trage sabia."
+                $ loyalty_boyars -= 1
+                narrator "Boierii nu vor uita asta. Va trebui să-ți croiești drum cu forța."
+                call start_combat("boier_garda", "grid_map")
+
     elif has_item("scrisoare_secreta"):
         "Ai scrisoarea. E timpul să te întorci la Călin în Târgoviște."
 
@@ -128,13 +150,29 @@ label zone_actions_han:
 
 label zone_actions_curtea_domneasca:
     scene expression location_background_displayable("curtea_domneasca") with dissolve
-    "Garda îți blochează calea. Accesul la Curte nu este permis acum."
+    if "curtea_intro" not in zone_event_done:
+        $ zone_event_done.append("curtea_intro")
+        narrator "Porțile se deschid. Pentru prima dată calci în inima puterii lui Vlad."
+        vlad "Deci tu ești agentul Ordinului. Am auzit că adulmeci prin hanurile mele."
+        menu:
+            "Cum răspunzi?"
+            "Sunt în slujba Ordinului — și a stabilității, Măria Ta.":
+                $ loyalty_vlad += 1
+                vlad "Stabilitate. Cuvânt frumos pentru frică. Dar îmi placi. Deocamdată."
+                narrator "Loialitatea față de Vlad a crescut."
+            "Nu slujesc decât adevărul.":
+                $ order_suspicion += 1
+                vlad "Adevărul. Periculos lucru, în mâinile cui nu trebuie."
+                narrator "Vlad te privește cu răceală. Suspiciunea plutește în aer."
+    else:
+        "Curtea Domnească. Soldații te urmăresc, dar te lasă să treci. Ești cunoscut acum."
     return
 
 
 label enter_padure:
     $ player_location = "padure"
     scene expression location_background_displayable("padure") with dissolve
+    $ unlock_location("tabara_otomana")
     "Pădurea Vlăsiei te înghite. Lumina dispare imediat ce intri sub coroanele copacilor. Ceva scârțâie în ramuri."
     return
 
@@ -147,11 +185,44 @@ label enter_tabara_otomana:
 
 label zone_actions_padure:
     scene expression location_background_displayable("padure") with dissolve
-    "Pădurea șoptește. Nu e nimic de găsit aici, deocamdată."
+    if "padure_tepe" not in zone_event_done:
+        $ zone_event_done.append("padure_tepe")
+        narrator "Pădurea se deschide într-un luminiș. Și atunci le vezi."
+        "Rânduri de țepe. Trupuri. Trădători, tâlhari, otomani — fără deosebire. Tăcere absolută."
+        "Metoda funcționează: drumurile sunt sigure de când Vlad a ridicat pădurea asta. Dar costul..."
+        menu:
+            "Ce simți?"
+            "Frica e o armă. Vlad are dreptate.":
+                $ loyalty_vlad += 1
+                narrator "Accepți prețul. Loialitatea față de Vlad crește."
+            "Asta nu e ordine. E groază. Trebuie oprit.":
+                $ loyalty_boyars += 1
+                narrator "Ceva în tine se întoarce împotriva lui Vlad."
+            "Privești în tăcere și cauți adevărul din spate.":
+                $ dragon_order_trust += 1
+                narrator "Rămâi rece. Ordinul are nevoie de minți limpezi."
+    else:
+        "Pădurea Țepelor. Treci repede. Nimeni nu zăbovește aici."
     return
 
 
 label zone_actions_tabara_otomana:
     scene expression location_background_displayable("tabara_otomana") with dissolve
-    "Soldații otomani te urmăresc cu privirea. Acum nu e momentul potrivit să acționezi."
+    if "tabara_kemal" not in zone_event_done:
+        $ zone_event_done.append("tabara_kemal")
+        $ ottoman_contact_made = True
+        kemal "Bine ai venit, agent al Dragonului. Sultanul prețuiește oamenii practici."
+        kemal "Vlad arde și trage în țepe. Noi oferim... pace. Și aur. Ai vrea să asculți?"
+        menu:
+            "Ce faci?"
+            "Ascult. O înțelegere nu strică nimănui.":
+                $ loyalty_ottomans += 1
+                kemal "Înțelept. Vom vorbi din nou, prietene."
+                narrator "Loialitatea față de otomani a crescut."
+            "Nu mă vând, pașă.":
+                $ loyalty_vlad += 1
+                kemal "Păcat. Sper să nu regreți, agentule."
+                narrator "Ai refuzat târgul. Vlad ar fi mândru."
+    else:
+        "Tabăra otomană. Kemal Pașa nu e de găsit acum."
     return
