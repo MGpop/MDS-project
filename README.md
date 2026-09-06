@@ -40,78 +40,120 @@ Structura logică a proiectului este împărțită astfel:
 
 ---
 
+## Agenții AI
+
+Jocul include **doi agenți AI care rulează un model de limbaj mic, local** — parte
+din funcționalitatea jocului, nu unelte de dezvoltare:
+
+- **Cronicarul** — la fiecare intrare într-o zonă, citește starea jucătorului
+  (loialități, suspiciunea Ordinului, ce are în desagă) și decide ce eveniment se
+  întâmplă, scriind narațiunea pe loc.
+- **Dialogul liber** — scrii orice text către un NPC, iar acesta răspunde în
+  caracter și decide un efect asupra stării jocului: încredere ±1, un indiciu pe
+  care nu-l spune oricui, sau ostilitate care duce la luptă.
+
+Modelul alege și scrie; jocul aplică efectul dintr-o listă albă. Dacă modelul e
+oprit, lent sau întoarce gunoi, jocul cade automat pe textele scrise de mână și
+merge identic mai departe.
+
+```bash
+bash scripts/setup_ai.sh     # instalează Ollama în ~/.local și descarcă modelul
+```
+
+Tasta **F9** pe hartă arată ce a decis ultimul agent, pe ce model, cu ce latență
+și dacă a fost răspuns de la model sau fallback.
+
+### Cum se comportă agenții (măsurat, nu estimat)
+
+Rulat cu `python3 evals/run_evals.py --repetari 3`, pe CPU, fără GPU:
+
+| agent | model | rata_model_% | potrivire_stare_% | română_% | scurgeri_% | încălcări listă albă_% | latență p50 | p95 |
+|---|---|---|---|---|---|---|---|---|
+| cronicar | qwen2.5:3b-instruct | 100 | 85.7 | 100 | — | 0 | 4.0s | 7.6s |
+| dialog | qwen2.5:3b-instruct | 100 | 50.0 | 100 | 0 | 0 | 4.8s | 7.2s |
+| cronicar | qwen2.5:1.5b-instruct | 95.2 | 57.1 | 100 | — | 0 | 1.7s | 3.5s |
+| dialog | qwen2.5:1.5b-instruct | 100 | 58.3 | 90 | 0 | 0 | 2.2s | 4.1s |
+
+De aceea implicit rulează `qwen2.5:3b-instruct`: nu ajunge niciodată pe fallback,
+scrie mereu în română și nu a scăpat niciun secret. `qwen2.5:1.5b-instruct` e de
+2–3 ori mai rapid și se poate alege din Opțiuni dacă laptopul de demo e mai lent.
+
+Detalii complete: **[docs/AI_AGENTS.md](docs/AI_AGENTS.md)**.
+Scenariul de prezentare: **[docs/DEMO.md](docs/DEMO.md)**.
+
 ---
+
+## Cum rulezi
+
+```bash
+# Jocul
+/cale/catre/renpy-8.5.2-sdk/renpy.sh .
+
+# Verificarea scriptului Ren'Py
+/cale/catre/renpy-8.5.2-sdk/renpy.sh . lint
+
+# Teste automate (nu au nevoie de model local)
+bash scripts/test.sh
+
+# Evals pentru agenți (au nevoie de modelul local)
+python3 evals/run_evals.py
+```
 
 ---
 
 ## Status curent
 
-### Rezumat
+Proiectul e un **vertical slice jucabil**: rulează, trece de lint și poate fi
+prezentat cap-coadă.
 
-În stadiul actual, proiectul este cel mai bine descris ca un **prototype / pre-alpha** cu un **vertical slice de explorare și atmosferă**. Fundația tehnică este deja construită, iar partea vizuală de bază pentru intro și deplasarea pe hartă este funcțională. În schimb, multe dintre sistemele mari planificate există încă doar ca structură sau placeholder.
+### Ce funcționează
 
-### Ce funcționează acum
+- **Bucla de joc:** intro → introducerea numelui → hartă în grilă 12×12 cu
+  deplasare celulă cu celulă (D-pad sau WASD), minimapă cu legendă și zone blocate,
+  fast-travel (`T`), inventar (`I`), jurnal de quest-uri (`J`).
+- **Capitolul I complet** (`q01_investigatie`): Călin → Hanul Corbului Negru
+  (alegere între a trage cu urechea și a căuta direct) → scrisoarea secretă →
+  întâlnirea cu Mircea, cu luptă opțională → alegerea finală care mută loialitățile.
+- **Trei zone active** cu alegeri morale: Curtea Domnească (Vlad), Pădurea Țepelor,
+  Tabăra otomană (Kemal). Se deblochează treptat, iar evenimentele lor se consumă o
+  singură dată.
+- **Patru finaluri demo**, alese după loialitatea dominantă, accesibile din jurnal.
+- **Combat** semi-real-time, cu parare și cooldown-uri independente.
+- **Doi agenți AI cu model de limbaj local** (vezi mai sus), plus două euristici
+  deterministe fără LLM: evaluatorul de recompense și adaptarea inamicului în luptă.
+- **Harta se auto-verifică la pornire:** `validate_world_grid()` refuză în tăcere
+  să lase două zone să se atingă direct, un drum fără nume sau o zonă inaccesibilă.
+  Aceleași verificări rulează și în teste.
 
-- Intro-ul jocului există și folosește asset-uri dedicate de opening.
-- Jucătorul își poate introduce numele.
-- Jocul pornește într-un flow clar către hartă.
-- Există un sistem de explorare pe o **grilă 12×12**.
-- Locațiile principale și conectorii dintre ele sunt definiți în date.
-- Background-urile au fost legate la fișiere reale din `game/images/backgrounds/`.
-- Harta afișează acum fundaluri atât pentru locații principale, cât și pentru drumurile/conectorii definiți explicit în grid.
-- Există bazele pentru:
-  - NPC-uri;
-  - iteme;
-  - inamici;
-  - rewards;
-  - flags și identificatori pentru quest-uri/facțiuni.
+### Ce urmează
 
-### Ce este implementat doar parțial
+- Capitolele II–V propriu-zise (`quests/quest_data.rpy`, `side_quests.rpy`).
+- Audio.
+- Restul livrabilelor de proces (vezi mai jos).
 
-- **Fast travel** există ca logică, dar depinde de deblocarea locațiilor pe măsură ce jocul avansează.
-- **Curtea Domnească**, **Pădurea** și **Tabăra otomană** sunt definite și au background-uri, dar progresia completă spre ele nu este încă susținută de quest-uri și evenimente reale.
-- Interacțiunile din zone sunt pregătite structural, dar nu sunt încă populate consistent cu conținut.
+---
 
-### Ce nu este încă implementat
+## Procesul de dezvoltare (componenta B)
 
-Următoarele module există în repo, dar sunt încă goale sau aproape nefolosite:
-- `game/quests/main_quest.rpy`
-- `game/quests/side_quests.rpy`
-- `game/quests/quest_data.rpy`
-- `game/systems/combat_system.rpy`
-- `game/systems/inventory_system.rpy`
-- `game/systems/npc_system.rpy`
-- `game/systems/quest_system.rpy`
-- `game/ai/environment_director.rpy`
-- `game/ai/combat_adaptation.rpy`
-- `game/ai/reward_evaluator.rpy`
+| Cerință | Unde se găsește | Stare |
+|---|---|---|
+| User stories, backlog | — | de făcut |
+| Diagrame | — | de făcut |
+| Source control cu git | istoricul repo-ului, branch-uri, PR-uri | în lucru |
+| Teste automate + evals pentru agenți | [`tests/`](tests/) (56 de teste), [`evals/`](evals/), `bash scripts/test.sh` | gata |
+| Raportare bug + rezolvare prin PR | — | de făcut |
+| Pipeline CI/CD | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | gata |
+| Raport despre folosirea AI | jurnal brut în `logs/llm_calls.jsonl` | de făcut |
 
-Cu alte cuvinte, proiectul are deja:
-- **scheletul lumii**;
-- **identitatea vizuală de bază**;
-- **flow-ul minim jucabil**;
+### Structura codului
 
-dar nu are încă:
-- bucla completă de quest-uri;
-- interacțiuni narative dezvoltate în fiecare zonă;
-- sistem de combat folosit în joc;
-- progresie completă între capitole;
-- finaluri și ramificații implementate efectiv.
-
-### Asset-uri și prezentare
-
-Partea de UI este deja bine susținută de asset-uri în `game/gui/`. În plus, proiectul folosește acum background-uri reale pentru:
-- intro;
-- locațiile principale;
-- conectorii relevanți de pe hartă.
-
-Asta înseamnă că prezentarea vizuală a trecut de etapa de placeholder pur și începe să semene cu un demo jucabil.
-
-### Concluzie
-
-În forma actuală, proiectul nu este încă „feature complete”, dar este într-un punct bun pentru:
-- continuarea dezvoltării pe quest-uri și conținut;
-- iterarea pe flow-ul narativ;
-- transformarea rapidă a prototype-ului într-un demo mai coerent.
-
-Cel mai mare câștig actual este că baza tehnică și direcția artistică sunt deja suficient de clare încât următorii pași să fie despre **conținut și integrare**, nu despre reconstrucția structurii.
+- `game/script.rpy` — flow-ul de start;
+- `game/systems/` — hartă, fast-travel, combat, inventar, quest-uri, NPC-uri;
+- `game/locations/` — locații și intrările în zone;
+- `game/characters/` — personaje și date NPC;
+- `game/data/` — iteme, recompense, flags, inamici;
+- `game/quests/` — quest-uri și progres narativ;
+- `game/ai/` — legătura dintre joc și agenții AI;
+- `game/python-packages/` — Python pur, fără Ren'Py, deci testabil cu pytest:
+  - `dragon_world/` — grila lumii și validarea ei;
+  - `dragon_ai/` — agenții, prompturile, validarea răspunsurilor, fallback-urile.
