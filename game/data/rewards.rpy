@@ -29,9 +29,6 @@ init python:
     }
 
     def give_quest_reward(quest_id):
-        reward = QUEST_REWARDS.get(quest_id)
-        if reward is None:
-            return
-        for item_id in reward.get("items", []):
-            add_item(item_id)
-        player_level += reward.get("xp", 0) // 20
+        # Delegăm către agentul de evaluare a recompenselor (ai/reward_evaluator.rpy),
+        # care aplică itemele + XP-ul și setează un mesaj de verdict.
+        return reward_grant_quest(quest_id)

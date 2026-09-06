@@ -8,6 +8,7 @@ default combat_enemy_name = "Inamic"
 default combat_enemy_max_health = 40
 default combat_enemy_health = 40
 default combat_enemy_base_damage = 8
+default combat_enemy_difficulty = 1
 
 # Ceas intern pentru lupta. Nu este timp real continuu, ci timp simulat.
 default combat_time = 0.0
@@ -61,19 +62,32 @@ init python:
     # Pattern-ul default cerut: light blow -> parare -> heavy blow -> repeat.
     DEFAULT_ENEMY_PATTERN = ["light", "parry", "heavy"]
 
+    # Sprite-uri generice de rezervă: orice inamic fără art propriu împrumută
+    # vizualul soldatului otoman, ca lupta să nu apară goală în demo.
+    COMBAT_FALLBACK_SPRITES = {
+        "default_sprite": "otoman_default",
+        "spotted_sprite": "otoman_spotted",
+        "fight_sprite":   "otoman_fight",
+        "parry_sprite":   "otoman_parry",
+        "light_sprite":   "otoman_light",
+        "heavy_sprite":   "otoman_heavy",
+    }
+
     def combat_get_enemy_sprite(enemy_id, state):
         data = ENEMIES.get(enemy_id, {})
         key = state + "_sprite"
-        return data.get(key, None)
+        return data.get(key) or COMBAT_FALLBACK_SPRITES.get(key)
 
     def get_enemy_combat_stats(enemy_id):
         data = ENEMIES.get(enemy_id, {})
         difficulty = data.get("difficulty", 1)
 
+        # Respectăm valorile explicite din ENEMIES; altfel derivăm din dificultate.
         return {
             "name": data.get("name", "Inamic"),
-            "max_health": 30 + difficulty * 20,
-            "base_damage": 5 + difficulty * 4,
+            "max_health": data.get("max_health", 30 + difficulty * 20),
+            "base_damage": data.get("damage", 5 + difficulty * 4),
+            "difficulty": difficulty,
         }
 
     def clamp_player_health():
@@ -118,6 +132,9 @@ label start_combat(enemy_id="haiduc", return_label="grid_map"):
     $ combat_enemy_max_health = enemy_stats["max_health"]
     $ combat_enemy_health = combat_enemy_max_health
     $ combat_enemy_base_damage = enemy_stats["base_damage"]
+    $ combat_enemy_difficulty = enemy_stats["difficulty"]
+
+    $ combat_adaptation_reset()
 
     $ combat_time = 0.0
     $ combat_player_busy_until = 0.0
@@ -161,7 +178,7 @@ label combat_loop:
 
     # Daca inamicul nu face nimic, isi incepe automat urmatoarea actiune din pattern.
     if combat_enemy_action is None and combat_time >= combat_enemy_busy_until:
-        $ enemy_move = combat_next_enemy_move()
+        $ enemy_move = combat_adaptation_next_move()
         $ combat_enemy_action = enemy_move
         $ combat_enemy_visual = combat_get_enemy_sprite(combat_enemy_id, enemy_move)
         $ combat_enemy_busy_until = combat_time + COMBAT_MOVES[enemy_move]["delay"]
@@ -191,6 +208,7 @@ label combat_loop:
     jump combat_advance_to_next_event
 
 label combat_start_player_parry:
+    $ combat_adaptation_note_player_parry()
     $ combat_player_action = "parry"
     $ combat_player_visual = "player_parry"
     $ combat_player_busy_until = combat_time + COMBAT_MOVES["parry"]["delay"]
@@ -199,6 +217,7 @@ label combat_start_player_parry:
     jump combat_advance_to_next_event
 
 label combat_start_player_light:
+    $ combat_adaptation_note_player_attack()
     $ combat_player_action = "light"
     $ combat_player_visual = "player_light"
     $ combat_player_busy_until = combat_time + COMBAT_MOVES["light"]["delay"]
@@ -207,6 +226,7 @@ label combat_start_player_light:
     jump combat_advance_to_next_event
 
 label combat_start_player_heavy:
+    $ combat_adaptation_note_player_attack()
     $ combat_player_action = "heavy"
     $ combat_player_visual = "player_heavy"
     $ combat_player_busy_until = combat_time + COMBAT_MOVES["heavy"]["delay"]
@@ -247,12 +267,14 @@ label combat_resolve_enemy_action:
             $ combat_status_message = combat_enemy_name + " lovește rapid, dar pararea ta oprește damage-ul."
         else:
             $ player_take_damage(combat_enemy_action_damage)
+            $ combat_adaptation_note_player_hit()
             $ combat_status_message = combat_enemy_name + " te lovește rapid pentru " + str(combat_enemy_action_damage) + " damage."
     elif combat_enemy_action == "heavy":
         if combat_time < combat_player_parry_until:
             $ combat_status_message = combat_enemy_name + " lovește greu, dar pararea ta ține."
         else:
             $ player_take_damage(combat_enemy_action_damage)
+            $ combat_adaptation_note_player_hit()
             $ combat_status_message = combat_enemy_name + " te lovește puternic pentru " + str(combat_enemy_action_damage) + " damage."
 
     $ combat_enemy_action = None
@@ -303,6 +325,8 @@ label combat_victory:
     $ combat_enemy_parry_until = 0.0
     $ combat_last_result = "victory"
     "[combat_enemy_name] cade. Lupta s-a terminat."
+    $ reward_grant_combat()
+    "[last_reward_message]"
     jump expression return_label
 
 label player_death:
@@ -314,8 +338,30 @@ label player_death:
     $ combat_last_result = "death"
     $ renpy.block_rollback()
     "Ai murit."
-    "Trebuie să revii la o salvare anterioară."
-    $ renpy.full_restart()
+    "Întunericul te cuprinde... dar povestea nu se termină aici."
+    # Refacem HP-ul ca o eventuală continuare să nu rămână într-o stare invalidă.
+    $ player_health = player_max_health
+    call screen player_death_screen
+    return
+
+
+screen player_death_screen():
+    modal True
+    zorder 300
+    add Solid("#000000DD")
+
+    frame:
+        align (0.5, 0.5)
+        xpadding 40
+        ypadding 32
+        background Solid("#1A0A0AEE")
+
+        vbox:
+            spacing 22
+            xalign 0.5
+            text "Ai căzut în luptă." size 40 xalign 0.5 color "#cc2200"
+            textbutton "Încarcă o salvare" action ShowMenu("load") xalign 0.5
+            textbutton "Înapoi la meniul principal" action MainMenu(confirm=False) xalign 0.5
 
 
 screen combat_hud(can_choose=False):
@@ -353,6 +399,9 @@ screen combat_hud(can_choose=False):
 
             if combat_status_message:
                 text "[combat_status_message]" size 22
+
+            if combat_adapt_message:
+                text "[[Agent adaptare] [combat_adapt_message]" size 20 color "#cca35a"
 
     if can_choose:
         frame:
